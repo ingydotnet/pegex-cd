@@ -6,20 +6,25 @@ license:   perl
 copyright: 2011
 ###
 
+Parser = require '../Pegex/Parser'
+Grammar = require '../Pegex/Pegex/Grammar'
+AST = require '../Pegex/Pegex/AST'
 Atoms = require '../Pegex/Grammar/Atoms'
 
 class Compiler
+  constructor: ->
+    @tree = null
+    @_tree = null
+
   compile: (input) ->
     @parse input
     @combinate()
+    @native()
     @
 
   parse: (input) ->
-    parser = new Parser({
-      grammar: new Grammar
-      receiver: new AST
-    })
-    @tree = parser.parse(input)
+    parser = new Parser new Grammar, new AST
+    @tree = parser.parse input
     @
 
   combinate: (rule) ->
@@ -71,8 +76,27 @@ class Compiler
       break if re == regexp['.rgx']
       regexp['.rgx'] = re
 
+  native: ->
+    @js_regexes @tree
+    @
+
+  js_regexes: (node) ->
+    if typeof node == 'object'
+      if node instanceof Array
+        @js_regexes elem for elem in node
+      else
+        if node['.rgx']?
+          re = node['.rgx']
+          node['.rgx'] = new RegExp "^#{re}"
+        else
+          for key, value of node
+            @js_regexes value
+
   to_yaml: ->
     throw "Pegex.Compiler.to_yaml not yet defined"
 
   to_json: ->
     JSON.stringify @tree
+
+  to_js: ->
+    (require 'util').format @tree

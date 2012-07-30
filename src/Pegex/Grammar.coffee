@@ -6,6 +6,11 @@ class Grammar
     {@receiver} = a
     {@receiver} = a
 
+  make_tree: ->
+    throw "Can't create a grammar. No 'text' or 'tree'." unless @text
+    Compiler = require '../Pegex/Compiler'
+    Compiler::compile(text).tree
+
   parse: (input, start_rule...) ->
     {parser} = @
     if parser?
@@ -19,5 +24,3 @@ class Grammar
         'receiver': receiver
       )
       parser.parse input, start_rule
-
-# vim:sw=2 sts=2:

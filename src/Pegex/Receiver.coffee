@@ -1,4 +1,5 @@
 class Receiver
-
-
-# vim:sw=2 sts=2:
+  constructor: ->
+    @parser
+    @data
+    @wrap = no

@@ -3,6 +3,7 @@ modules = [
   'Pegex/Compiler'
   'Pegex/Grammar'
   'Pegex/Input'
+  'Pegex/Module'
   'Pegex/Parser'
   'Pegex/Receiver'
   'Pegex/Grammar/Atoms'
