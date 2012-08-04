@@ -1,4 +1,4 @@
-Atoms = require '../../Pegex/Grammar/Atoms'
+{Atoms} = require '../../Pegex/Grammar/Atoms'
 
 merge = (object, rest...) ->
   for hash in rest
@@ -6,7 +6,7 @@ merge = (object, rest...) ->
       object[k] = v
   object
 
-class AST
+exports.AST = class AST
   constructor: ->
     @toprule
     @extra_rules = {}

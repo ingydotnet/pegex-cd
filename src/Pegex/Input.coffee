@@ -1,4 +1,4 @@
-class Input
+exports.Input = class Input
   constructor: (a = {}) ->
     {@string} = a
     {@file} = a

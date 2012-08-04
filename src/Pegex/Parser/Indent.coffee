@@ -1,3 +1,3 @@
-Parser = require '../../Pegex/Parser'
+{Parser} = require '../../Pegex/Parser'
 
-class Indent extends Parser
+exports.Indent = class Indent extends Parser

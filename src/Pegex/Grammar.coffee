@@ -1,4 +1,4 @@
-class Grammar
+exports.Grammar = class Grammar
   constructor: (a = {}) ->
     {@text} = a; @text ?= ''
     {@tree} = a

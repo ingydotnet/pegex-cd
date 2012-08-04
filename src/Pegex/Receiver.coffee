@@ -1,4 +1,4 @@
-class Receiver
+exports.Receiver = class Receiver
   constructor: ->
     @parser
     @data

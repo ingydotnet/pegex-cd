@@ -1,4 +1,4 @@
-class Atoms
+exports.Atoms = class Atoms
   atoms: ->
     ws      : '<WS>'
     ws1     : '<ws>*'

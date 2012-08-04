@@ -1,7 +1,7 @@
-Input = require '../Pegex/Input'
-Receiver = require '../Pegex/Receiver'
+{Input} = require '../Pegex/Input'
+{Receiver} = require '../Pegex/Receiver'
 
-class Parser
+exports.Parser = class Parser
 
   constructor: (@grammar, @receiver) ->
     @receiver ||= new require './Pegex/Receiver'

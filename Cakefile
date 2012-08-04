@@ -19,7 +19,7 @@ task 'build', 'build the Pegex framework', build = (cb) ->
   exec 'coffee --compile --output lib/ src/', (err) ->
     throw err if err
 
-task 'test', 'run the CoffeeScript language test suite', ->
+task 'test', 'run the Pegex test suite', ->
   runTests CoffeeScript
 
 # Run the CoffeeScript test suite.

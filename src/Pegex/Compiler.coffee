@@ -6,12 +6,12 @@ license:   perl
 copyright: 2011
 ###
 
-Parser = require '../Pegex/Parser'
-Grammar = require '../Pegex/Pegex/Grammar'
-AST = require '../Pegex/Pegex/AST'
-Atoms = require '../Pegex/Grammar/Atoms'
+{Parser} = require '../Pegex/Parser'
+{Grammar} = require '../Pegex/Pegex/Grammar'
+{AST} = require '../Pegex/Pegex/AST'
+{Atoms} = require '../Pegex/Grammar/Atoms'
 
-class Compiler
+exports.Compiler = class Compiler
   constructor: ->
     @tree = null
     @_tree = null
