@@ -25,7 +25,7 @@ exports.AST = class AST
         grammar[k] = v
     grammar
 
-  got_meta_section: (directive) ->
+  got_meta_section: (directives) ->
     meta = {}
     for next in directives
       [key, val] = next
@@ -41,11 +41,14 @@ exports.AST = class AST
     meta
 
   got_rule_definition: (match) ->
-    name = match[0]
+    name = match[0][0]   # XXX
     @toprule = name if name == 'TOP'
     @toprule ||= name
-    value = match[1]
-    { name: value }
+    value = match[1][0] # XXX
+
+    ret = {}
+    ret[name] = value
+    ret
 
   got_bracketed_group: (match) ->
     group = match[1]
@@ -74,7 +77,7 @@ exports.AST = class AST
         return get(x) for x in it
       else
         return it
-    return get(group)
+    return [ get(group) ]
 
   got_rule_part: (part) ->
     [rule, sep_on, sep_rule] = part
@@ -85,9 +88,9 @@ exports.AST = class AST
 
   got_rule_reference: (match) ->
     [prefix, ref1, ref2, suffix] = match
-    ref = ref1 || ref2
+    ref = ref1 ? ref2
     node = { '.ref': ref }
-    if regex = Atoms.atoms[ref]
+    if regex = Atoms::atoms()[ref]
       @extra_rules[ref] = {'.rgx': regex}
     if suffix
       @set_quantity node, suffix
@@ -95,6 +98,7 @@ exports.AST = class AST
       [key, val] = [prefixes[prefix], 1]
       [key, val] = key if typeof key == 'object'
       node[key] = val
+    return node
 
   got_regular_expression: (match) ->
     match = match.replace /\s*#.*\n/g, ''

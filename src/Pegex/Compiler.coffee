@@ -33,6 +33,7 @@ exports.Compiler = class Compiler
     @_tree = {}
     for k, v of @tree when k.match /^\+/
       @_tree.k = v
+    @
 
   combinate_rule: (rule) ->
     return if @_tree[rule]?

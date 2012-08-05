@@ -11,17 +11,24 @@ exports.Parser = class Parser
     @buffer = ''
     @error = null
     @position = 0
+    # @debug = on
     @debug = off
 
   parse: (input, start_rule) ->
     @input = input
+    if typeof @input == 'string'
+      @input = new Input {string: @input}
+    @input.open()
     @buffer = @input.read()
     grammar = @grammar ?
       throw "No 'grammar'. Can't parse"
     if typeof grammar == 'string'
-      require '../' + grammar
-      @grammar = new grammar
-    start_rule ?= @grammar.tree['+toprule'] ? do ->
+      Grammar = require '../' + grammar
+      @grammar = new Grammar
+    else
+      @grammar.tree ?= @grammar.make_tree()
+
+    start_rule ?= @grammar.tree?['+toprule'] ? do =>
       if @grammar.tree['TOP']
         'TOP'
       else
@@ -41,20 +48,19 @@ exports.Parser = class Parser
     return @receiver.data || match
 
   match: (rule) ->
-    @receiver.initialize rule if @receiver::initialize
+    @receiver.initialize rule if @receiver.constructor::initialize
     match = @match_next { '.ref': rule }
     if ! match or @position < @buffer.length
       @throw_error "Parse document failed for some reason"
       return
     match = match[0]
-    match = @receiver.finalize match rule if @receiver::finalize
+    match = @receiver.finalize match rule if @receiver.constructor::finalize
     match = {rule: []} unless match
     if rule == 'TOP'
       match = match['TOP'] ? match
     match
 
   get_min_max: (next) ->
-    return @match_next_with_sep next if next['.sep']
     [min, max] = [ next['+min'], next['+max'] ]
     if min?
       if max?
@@ -72,14 +78,15 @@ exports.Parser = class Parser
 
     [min, max] = @get_min_max next
     assertion = next['+asr'] ? 0
-    keys = ['ref', 'rgx', 'all', 'err', 'code']
-    [rule, kind] = for key in keys when next[".#{key}"]?
-      [next[".#{key}"], key]
+    keys = ['ref', 'rgx', 'all', 'any', 'err', 'code']
+    for key in keys when next[".#{key}"]?
+      kind = key
+      rule = next[".#{key}"]
 
     [match, position, count, method] =
       [[], @position, 0, "match_#{kind}"]
 
-    while return_ = method.call this rule next
+    while return_ = @[method].call this, rule, next
       position = @position unless assertion
       count++
       match.push return_...
@@ -100,15 +107,16 @@ exports.Parser = class Parser
 
   match_next_with_sep: (next) ->
     [min, max] = @get_min_max next
-    [rule, kind] = for key in keys when next[".#{key}"]?
-      [next[".#{key}"], key]
+    keys = ['ref', 'rgx', 'all', 'any', 'err', 'code']
+    for key in keys when next[".#{key}"]?
+      kind = key
+      rule = next[".#{key}"]
     separator = next['.sep']
 
-    [match, position, count, method, scount, smin, smax] =
-      [[], @position, 0, "match_#{kind}", 0,
-        @get_min_max separator]
+    [match, position, count, method, scount, [smin, smax]] =
+      [[], @position, 0, "match_#{kind}", 0, @get_min_max separator]
 
-    while return_ = method.call this rule next
+    while return_ = @[method].call this, rule, next
       position = @position
       count++
       match.push return_...
@@ -141,13 +149,13 @@ exports.Parser = class Parser
       @trace "got_#{ref}" if trace
       if not rule['+asr'] and not parent['-skip']
         callback = "got_#{ref}"
-        sub = @receiver::[callback]
+        sub = @receiver.constructor.prototype[callback]
         if sub?
           match = [ sub.call @receiver, match[0] ]
         else if @wrap and not parent['-pass'] or parent['-wrap']
           match = if match.length then [ {ref: match[0]} ] else []
     else
-      @trace "not_#{ref}"
+      @trace "not_#{ref}" if trace
       match = 0
 
     match
@@ -162,10 +170,12 @@ exports.Parser = class Parser
     re = new RegExp regexp, 'g'
     re.lastIndex = start
     m = re.exec @buffer
-    return 0 if not m
+    return 0 if not m? or m.index != start
     finish = re.lastIndex
-    match = m[num] for num in [1...m.length]
-    match = [ match ] if m.length > 1
+    match = []
+    for num in [1...(m.length)]
+      match.push(m[num])
+    match = [ match ] if m.length > 2
     @set_position finish
     return match
 
@@ -186,7 +196,8 @@ exports.Parser = class Parser
 
   match_any: (list, parent) ->
     for elem in list
-      if match = @match_next elem
+      match = @match_next elem
+      if match
         return match
     return 0
 
@@ -203,15 +214,16 @@ exports.Parser = class Parser
 
   trace: (action) ->
     indent = action.match /^try_/
-    @indent ||= 0
+    @indent ||= 1
     @indent-- unless indent
-    indentation = ''
-    indentation += ' ' for x in [1..@indent]
+    i1 = i2 = ''
+    i1 += ' ' for x in [0..@indent]
+    i2 += ' ' for x in [1..(30 - action.length)]
     @indent++ if indent
     snippet = @buffer.substr @position
     snippet = snippet.substr 0, 30 if snippet.length > 30
     snippet = snippet.replace /\n/, '\\n'
-    console.warn "#{indentation}>#{snippet}<\n"
+    console.warn "#{i1} #{action}#{i2}>#{snippet}<"
 
   throw_error: (msg) ->
     @format_error msg
