@@ -87,7 +87,7 @@ exports.AST = class AST
   got_rule_part: (part) ->
     [rule, sep_on, sep_rule] = part
     if sep_rule
-      sep_rule['+eok'] = yes if sep_op == '%%'
+      sep_rule['+eok'] = yes if sep_on == '%%'
       rule['.sep'] = sep_rule
     return rule
 

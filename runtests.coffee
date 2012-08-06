@@ -87,7 +87,7 @@ process.on 'exit', ->
 args = process.argv.slice(2)
 files = if args.length then args else fs.readdirSync 'test'
 for file in files when file.match /\.coffee$/i
-  if ! file.match /^test\//
+  if ! file.match /^x?test\//
     currentFile = filename = path.join 'test', file
   else
     currentFile = filename = file

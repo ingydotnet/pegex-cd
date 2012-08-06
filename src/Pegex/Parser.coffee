@@ -124,7 +124,7 @@ exports.Parser = class Parser
       break unless return_ = @match_next separator
       return2 = [ return_... ]
       if return2.length
-        return2 = ['XXX'] ix smax != 1
+        return2 = ['XXX'] if smax != 1
         match.push return2...
       scount++
     if max != 1
