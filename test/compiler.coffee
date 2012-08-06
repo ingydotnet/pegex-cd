@@ -126,6 +126,31 @@ data = -> [
       - .ref: x
       - .ref: y
   """
+,
+  label: 'Bracketed Group With Trailing Modifier'
+  grammar: """
+    a: ( <x> <y> )?
+  """
+  yaml: """
+    a:
+      +max: 1
+      .all:
+      - .ref: x
+      - .ref: y
+  """
+,
+  label: 'Bracketed Group With Leading Modifier'
+  grammar: """
+    a: .( =<x> <y> )
+  """
+  yaml: """
+    a:
+      -skip: 1
+      .all:
+      - +asr: 1
+        .ref: x
+      - .ref: y
+  """
 ]
 
 tests = []

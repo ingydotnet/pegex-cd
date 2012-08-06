@@ -11,6 +11,7 @@ exports.Parser = class Parser
     @buffer = ''
     @error = null
     @position = 0
+    @farthest = 0
     @debug = on
     @debug = off
 
@@ -231,10 +232,11 @@ exports.Parser = class Parser
 
   format_error: (msg) ->
     position = @farthest
-    line = @buffer.substr 0, (position match /\n/g)? length + 1
+    lines = (@buffer.substr 0, position).match /\n/g
+    line = if lines? then lines.length + 1 else 1
     column = position - @buffer.lastIndexOf "\n", position
     context = @buffer.substr position, 50
-    context = context.replace /\n/, '\\n'
+    context = context.replace /\n/g, '\\n'
     @error = """
 Error parsing Pegex document:
   msg: #{msg}
