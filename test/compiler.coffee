@@ -74,6 +74,58 @@ data = -> [
       +asr: 1
       .ref: x
   """
+,
+  label: 'Single Regex'
+  grammar: """
+    a: /x/
+  """
+  yaml: """
+    a:
+      .rgx: x
+  """
+,
+  label: 'Single Error'
+  grammar: """
+    a: `x`
+  """
+  yaml: """
+    a:
+      .err: x
+  """
+,
+  label: 'Unbracketed All Group'
+  grammar: """
+    a: <x> <y>
+  """
+  yaml: """
+    a:
+      .all:
+      - .ref: x
+      - .ref: y
+  """
+,
+  label: 'Unbracketed Any Group'
+  grammar: """
+    a: /x/ | <y> | `z`
+  """
+  yaml: """
+    a:
+      .any:
+      - .rgx: x
+      - .ref: y
+      - .err: z
+  """
+,
+  label: 'Bracketed All Group'
+  grammar: """
+    a: ( <x> <y> )
+  """
+  yaml: """
+    a:
+      .all:
+      - .ref: x
+      - .ref: y
+  """
 ]
 
 tests = []
