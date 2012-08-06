@@ -53,7 +53,7 @@ exports.AST = class AST
   got_bracketed_group: (match) ->
     group = match[1]
     if prefix = match[0]
-      group[prefixes[prefix]] = 1
+      group[@prefixes[prefix]] = 1
     if suffix = match[2]
       @set_quantity group, suffix
     group
@@ -100,7 +100,7 @@ exports.AST = class AST
     if suffix
       @set_quantity node, suffix
     if prefix
-      [key, val] = [prefixes[prefix], 1]
+      [key, val] = [@prefixes[prefix], 1]
       [key, val] = key if typeof key == 'object'
       node[key] = val
     return node

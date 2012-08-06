@@ -64,6 +64,16 @@ data = -> [
       +min: 0
       .ref: x
   """
+,
+  label: 'Single Rule With Leading Assertion'
+  grammar: """
+    a: =<x>
+  """
+  yaml: """
+    a:
+      +asr: 1
+      .ref: x
+  """
 ]
 
 tests = []
