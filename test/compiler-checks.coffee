@@ -151,10 +151,60 @@ data = -> [
         .ref: x
       - .ref: y
   """
+,
+  label: 'Multiple Groups'
+  grammar: """
+    a: ( <x> <y> ) ( <z> | /.../ )
+  """
+  yaml: """
+    a:
+      .all:
+      - .all:
+        - .ref: x
+        - .ref: y
+      - .any:
+        - .ref: z
+        - .rgx: '...'
+  """
+,
+  label: 'Whitespace in Regex'
+  grammar: """
+    a: /<DOT>* (<DASH>{3})
+        <BANG>   <BANG>
+       /
+  """
+  yaml: """
+    a:
+      .rgx: \\.*(\\-{3})!!
+  """
+,
+  label: 'Directives'
+  grammar: """
+    %grammar foo
+    %version 1.2.3
+  """
+  yaml: """
+    +grammar: foo
+    +version: 1.2.3
+  """
+,
+  label: 'Multiple Duplicate Directives'
+  grammar: """
+    %grammar foo
+    %include bar
+    %include baz
+  """
+  yaml: """
+    +grammar: foo
+    +include:
+    - bar
+    - baz
+  """
 ]
 
 tests = []
 for t in data()
+  continue if t.SKIP
   if t.ONLY
     tests = [t]
     break

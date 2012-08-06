@@ -38,7 +38,7 @@ exports.Grammar = class Grammar extends Parent
           ]
        },
        "ending" : {
-          ".rgx" : "(?:\\s|\\#.*\\n)*?(?:\\n(?:\\s|\\#.*\\n)*|;(?:\\s|\\#.*\\n)*|\\z)"
+          ".rgx" : "(?:\\s|\\#.*\\n)*?(?:\\n(?:\\s|\\#.*\\n)*|;(?:\\s|\\#.*\\n)*|$)"
        },
        "error_message" : {
           ".rgx" : "`([^`\\r\\n]*)`"
@@ -54,7 +54,7 @@ exports.Grammar = class Grammar extends Parent
           ]
        },
        "meta_definition" : {
-          ".rgx" : "%(grammar|extends|include|version)[\\ \\t]+[\\ \\t]*([^;\\n]*?)[\\ \\t]*(?:\\s|\\#.*\\n)*?(?:\\n(?:\\s|\\#.*\\n)*|;(?:\\s|\\#.*\\n)*|\\z)"
+          ".rgx" : "%(grammar|extends|include|version)[\\ \\t]+[\\ \\t]*([^;\\n]*?)[\\ \\t]*(?:\\s|\\#.*\\n)*?(?:\\n(?:\\s|\\#.*\\n)*|;(?:\\s|\\#.*\\n)*|$)"
        },
        "meta_section" : {
           "+min" : 0,

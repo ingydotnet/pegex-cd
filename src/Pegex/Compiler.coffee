@@ -32,7 +32,10 @@ exports.Compiler = class Compiler
     return @ unless rule
     @_tree = {}
     for k, v of @tree when k.match /^\+/
-      @_tree.k = v
+      @_tree[k] = v
+    @combinate_rule rule
+    @tree = @_tree
+    delete @_tree
     @
 
   combinate_rule: (rule) ->
@@ -62,12 +65,14 @@ exports.Compiler = class Compiler
     @
 
   combinate_re: (regexp) ->
-    atoms = Atoms.atoms
+    atoms = Atoms::atoms()
     re = regexp['.rgx']
     loop
-      re = re.replace /(?<!\\)(~+)/g, (m, $1) ->
+      # XXX - JS doesn't support negative lookbehind assertion
+      # re = re.replace /(?<!\\)(~+)/g, (m, $1) ->
+      re = re.replace /(~+)/g, (m, $1) ->
         '<ws' + $1.length + '>'
-      re = re.replace /<(\w+)>/, (m, $1) ->
+      re = re.replace /<(\w+)>/, (m, $1) =>
         if @tree[$1]?
           @tree[$1]['.rgx']
         else if atoms[$1]?
