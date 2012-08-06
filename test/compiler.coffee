@@ -35,6 +35,35 @@ data = -> [
     a:
       .ref: x
   """
+,
+  label: 'Single Rule with no brackets'
+  grammar: """
+    a: x
+  """
+  yaml: """
+    a:
+      .ref: x
+  """
+,
+  label: 'Single Rule With Trailing Quantifier'
+  grammar: """
+    a: <x>*
+  """
+  yaml: """
+    a:
+      +min: 0
+      .ref: x
+  """
+,
+  label: 'Single Rule With Trailing Quantifier (no angles)'
+  grammar: """
+    a: x*
+  """
+  yaml: """
+    a:
+      +min: 0
+      .ref: x
+  """
 ]
 
 tests = []
