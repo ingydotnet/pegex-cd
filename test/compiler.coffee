@@ -27,7 +27,6 @@ data = -> [
       .ref: x
   """
 ,
-  ONLY: true
   label: 'Single Rule'
   grammar: """
     a: <x>

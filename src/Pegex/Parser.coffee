@@ -157,6 +157,7 @@ exports.Parser = class Parser
     else
       @trace "not_#{ref}" if trace
       match = 0
+    say match if match and @debug
     match
 
   xxx_terminator_hack: 0
@@ -220,7 +221,7 @@ exports.Parser = class Parser
     @indent++ if indent
     snippet = @buffer.substr @position
     snippet = snippet.substr 0, 30 if snippet.length > 30
-    snippet = snippet.replace /\n/, '\\n'
+    snippet = snippet.replace /\n/g, '\\n'
     console.warn "#{i1} #{action}#{i2}>#{snippet}<"
 
   throw_error: (msg) ->

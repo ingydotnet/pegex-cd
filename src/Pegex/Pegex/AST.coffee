@@ -54,15 +54,17 @@ exports.AST = class AST
     group = match[1]
     if prefix = match[0]
       group[prefixes[prefix]] = 1
-    if suffix = match[-1]
-      @set_quantity group suffix
+    if suffix = match[2]
+      @set_quantity group, suffix
     group
 
   got_all_group: (match) ->
     list = @get_group match
     throw 42 unless list.length
-    return list[0] if list.length == 1
-    return { '.all': list }
+    if list.length == 1
+      return list[0]
+    else
+      { '.all': list }
 
   got_any_group: (match) ->
     list = @get_group match
@@ -74,10 +76,13 @@ exports.AST = class AST
     get = (it) ->
       return unless typeof it == 'object'
       if it instanceof Array
-        return get(x) for x in it
+        a = []
+        for x in it
+          a.push (get x)...
+        return a
       else
-        return it
-    return [ get(group) ]
+        return [it]
+    return [ (get group)... ]
 
   got_rule_part: (part) ->
     [rule, sep_on, sep_rule] = part
