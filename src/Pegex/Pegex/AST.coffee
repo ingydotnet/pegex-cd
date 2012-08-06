@@ -41,10 +41,10 @@ exports.AST = class AST
     meta
 
   got_rule_definition: (match) ->
-    name = match[0][0]   # XXX
+    name = match[0]
     @toprule = name if name == 'TOP'
     @toprule ||= name
-    value = match[1][0] # XXX
+    value = match[1]
 
     ret = {}
     ret[name] = value

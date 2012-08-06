@@ -49,5 +49,4 @@ for t in tests
   t.grammar += "\n"
   t.yaml += "\n"
   test t.label, ->
-    deepEqual compile(t.grammar)[0], YAML.load t.yaml # XXX
-    # deepEqual compile(t.grammar), YAML.load t.yaml
+    deepEqual compile(t.grammar), YAML.load t.yaml

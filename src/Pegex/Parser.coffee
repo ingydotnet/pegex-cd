@@ -11,7 +11,7 @@ exports.Parser = class Parser
     @buffer = ''
     @error = null
     @position = 0
-    # @debug = on
+    @debug = on
     @debug = off
 
   parse: (input, start_rule) ->
@@ -157,7 +157,6 @@ exports.Parser = class Parser
     else
       @trace "not_#{ref}" if trace
       match = 0
-
     match
 
   xxx_terminator_hack: 0
@@ -186,7 +185,7 @@ exports.Parser = class Parser
     for elem in list
       if match = @match_next elem
         continue if elem['+asr'] or elem['-skip']
-        set.push match
+        set.push match...
         len++
       else
         @set_position pos
@@ -196,8 +195,7 @@ exports.Parser = class Parser
 
   match_any: (list, parent) ->
     for elem in list
-      match = @match_next elem
-      if match
+      if match = @match_next elem
         return match
     return 0
 
