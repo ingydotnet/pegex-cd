@@ -1,4 +1,6 @@
-exports.Receiver = class Receiver
+require '../Pegex'
+
+global.Pegex.Receiver = exports.Receiver = class Receiver
   constructor: ->
     @parser
     @data

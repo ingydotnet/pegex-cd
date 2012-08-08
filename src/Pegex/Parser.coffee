@@ -1,10 +1,18 @@
-{Input} = require '../Pegex/Input'
-{Receiver} = require '../Pegex/Receiver'
+###
+name:      Pegex.Parser
+abstract:  Pegex Parser module
+author:    Ingy döt Net <ingy@ingy.net>
+license:   MIT
+copyright: 2012
+###
 
-exports.Parser = class Parser
+require '../Pegex/Input'
+require '../Pegex/Receiver'
+
+global.Pegex.Parser = exports.Parser = class Parser
 
   constructor: (@grammar, @receiver) ->
-    @receiver ||= new require './Pegex/Receiver'
+    @receiver ||= new Pegex.Receiver
     @throw_on_error = on
     @wrap = @receiver.wrap
     @input = ''
@@ -18,14 +26,14 @@ exports.Parser = class Parser
   parse: (input, start_rule) ->
     @input = input
     if typeof @input == 'string'
-      @input = new Input {string: @input}
+      @input = new Pegex.Input {string: @input}
     @input.open()
     @buffer = @input.read()
     grammar = @grammar ?
       throw "No 'grammar'. Can't parse"
     if typeof grammar == 'string'
       Grammar = require '../' + grammar
-      @grammar = new Grammar
+      @grammar = new Pegex.Grammar
     else
       @grammar.tree ?= @grammar.make_tree()
 

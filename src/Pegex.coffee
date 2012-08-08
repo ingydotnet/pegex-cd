@@ -1,13 +1,19 @@
-exports.VERSION = '0.19'
+###
+name:      Pegex
+abstract:  Pegex - Acmeist Parsing Framework
+author:    Ingy döt Net <ingy@ingy.net>
+license:   MIT
+copyright: 2011
+###
 
-Grammar = require './Pegex/Grammar'
-Receiver = require './Pegex/Receiver'
+global.Pegex = exports.Pegex = class Pegex
+  VERSION: '0.0.1'
 
-class Pegex
-  pegex: (grammar, options) ->
-    options ||= {}
-    wrap = options.wrap ? true
-    receiver = options.receiver ? new Receiver(wrap)
-    new Grammar(grammar, receiver)
+exports.pegex = (grammar, options) ->
+  require './Pegex/Grammar'
+  require './Pegex/Receiver'
 
-exports.pegex = Pegex.prototype.pegex
+  options ?= {}
+  wrap = options.wrap ? true
+  receiver = options.receiver ? new Pegex.Receiver(wrap)
+  new Pegex.Grammar(grammar, receiver)

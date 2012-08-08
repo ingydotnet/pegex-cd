@@ -1,6 +1,7 @@
-Parent = (require '../../Pegex/Grammar').Grammar
+require '../../Pegex/Grammar'
 
-exports.Grammar = class Grammar extends Parent
+global.Pegex.Pegex ?= ->
+global.Pegex.Pegex.Grammar = exports.Grammar = class Grammar extends Pegex.Grammar
 
   text: ->
     '../pegex-pgx/pegex.pgx'

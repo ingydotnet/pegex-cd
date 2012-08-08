@@ -1,4 +1,4 @@
-{Atoms} = require '../../Pegex/Grammar/Atoms'
+require '../../Pegex/Grammar/Atoms'
 
 merge = (object, rest...) ->
   for hash in rest
@@ -6,7 +6,7 @@ merge = (object, rest...) ->
       object[k] = v
   object
 
-exports.AST = class AST
+global.Pegex.Pegex.AST = exports.AST = class AST
   constructor: ->
     @toprule
     @extra_rules = {}
@@ -95,7 +95,7 @@ exports.AST = class AST
     [prefix, ref1, ref2, suffix] = match
     ref = ref1 ? ref2
     node = { '.ref': ref }
-    if regex = Atoms::atoms()[ref]
+    if regex = Pegex.Grammar.Atoms::atoms()[ref]
       @extra_rules[ref] = {'.rgx': regex}
     if suffix
       @set_quantity node, suffix

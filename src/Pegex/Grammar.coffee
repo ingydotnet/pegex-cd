@@ -1,4 +1,6 @@
-exports.Grammar = class Grammar
+require '../Pegex'
+
+global.Pegex.Grammar = exports.Grammar = class Grammar
   constructor: (a = {}) ->
     {@text} = a; @text ?= ''
     {@tree} = a
@@ -14,13 +16,13 @@ exports.Grammar = class Grammar
   parse: (input, start_rule...) ->
     {parser} = @
     if parser?
-      Parser = require '../Pegex/Parser'
+      require '../Pegex/Parser'
       {receiver} = @
       if typeof receiver != 'object'
         Receiver = require receiver
         receiver = new Receiver()
-      parser = new Parser(
+      parser = new Pegex.Parser(
         'grammar': @
         'receiver': receiver
       )
-      parser.parse input, start_rule
+    parser.parse input, start_rule

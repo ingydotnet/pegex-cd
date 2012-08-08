@@ -1,5 +1,5 @@
-{Grammar} = require '../Pegex/Grammar'
-{Parser} = require '../Pegex/Parser'
+require '../Pegex/Grammar'
+require '../Pegex/Parser'
 
 exports.Module = class Module
   parse: (input) ->
@@ -8,7 +8,7 @@ exports.Module = class Module
 
   grammar: ->
     class_name = "#{@.name}.Grammar"
-    eval "class #{class_name} extends Grammar"
+    eval "class #{class_name} extends Pegex.Grammar"
 
   parser: ->
     "TODO"

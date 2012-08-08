@@ -1,17 +1,17 @@
 ###
-name:      Pegex::Compiler
-abstract:  Pegex Compiler
+name:      Pegex.Compiler
+abstract:  Pegex Compiler module
 author:    Ingy döt Net <ingy@ingy.net>
-license:   perl
-copyright: 2011
+license:   MIT
+copyright: 2012
 ###
 
-{Parser} = require '../Pegex/Parser'
-{Grammar} = require '../Pegex/Pegex/Grammar'
-{AST} = require '../Pegex/Pegex/AST'
-{Atoms} = require '../Pegex/Grammar/Atoms'
+require '../Pegex/Parser'
+require '../Pegex/Pegex/Grammar'
+require '../Pegex/Pegex/AST'
+require '../Pegex/Grammar/Atoms'
 
-exports.Compiler = class Compiler
+global.Pegex.Compiler = exports.Compiler = class Compiler
   constructor: ->
     @tree = null
     @_tree = null
@@ -23,7 +23,7 @@ exports.Compiler = class Compiler
     @
 
   parse: (input) ->
-    parser = new Parser new Grammar, new AST
+    parser = new Pegex.Parser new Pegex.Pegex.Grammar, new Pegex.Pegex.AST
     @tree = parser.parse input
     @
 
@@ -65,7 +65,7 @@ exports.Compiler = class Compiler
     @
 
   combinate_re: (regexp) ->
-    atoms = Atoms::atoms()
+    atoms = Pegex.Grammar.Atoms::atoms()
     re = regexp['.rgx']
     loop
       # XXX - JS doesn't support negative lookbehind assertion

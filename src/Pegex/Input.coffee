@@ -1,4 +1,6 @@
-exports.Input = class Input
+require '../Pegex'
+
+global.Pegex.Input = exports.Input = class Input
   constructor: (a = {}) ->
     {@string} = a
     {@file} = a

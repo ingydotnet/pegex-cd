@@ -1,4 +1,6 @@
-exports.Atoms = class Atoms
+require '../../Pegex/Grammar'
+
+global.Pegex.Grammar.Atoms = exports.Atoms = class Atoms
   atoms: ->
     ws      : '<WS>'
     ws1     : '<ws>*'
