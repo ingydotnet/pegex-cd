@@ -5,7 +5,7 @@ compile = (grammar_file_path) ->
   compiler = new Compiler
   grammar = String fs.readFileSync grammar_file_path
   tree = compiler.parse(grammar).combinate().tree
-  say tree
+  #say tree
 
 data = -> [
   label: 'Pegex Grammar'

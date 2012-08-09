@@ -1,3 +1,6 @@
+ALL_COFFEE = $(shell find src -name *.coffee)
+ALL_JS = $(ALL_COFFEE:src/%.coffee=lib/%.js)
+
 default: help
 
 help:
@@ -10,9 +13,13 @@ help:
 	@echo '    make help   - Get Help'
 	@echo ''
 
-build:
-	coffee --compile --output lib src
-	coffee --compile --output test/lib test/src
+build: $(ALL_JS)
 
-test: build
-	node -e 'require("./test/lib/Test/Harness").run()' $@
+lib/%.js: src/%.coffee
+	coffee --compile -p $< > $@
+
+test xtest: build
+	coffee -e '(require "./test/lib/Test/Harness").run()' $@
+
+clean:
+	rm -fr node_modules

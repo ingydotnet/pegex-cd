@@ -11,7 +11,7 @@ global.xxx = ->
 fs            = require 'fs'
 path          = require 'path'
 CoffeeScript  = require 'coffee-script'
-{exec} = require 'child_process'
+{exec}        = require 'child_process'
 
 # ANSI Terminal Colors.
 enableColors = no
@@ -32,6 +32,9 @@ failures    = []
 
 global[name] = func for name, func of require 'assert'
 
+# Convenience aliases.
+global.CoffeeScript = CoffeeScript
+
 # Our test helper function for delimiting different test cases.
 global.test = (description, fn) ->
   try
@@ -42,6 +45,24 @@ global.test = (description, fn) ->
     e.description = description if description?
     e.source      = fn.toString() if fn.toString?
     failures.push filename: currentFile, error: e
+
+# See http://wiki.ecmascript.org/doku.php?id=harmony:egal
+egal = (a, b) ->
+  if a is b
+    a isnt 0 or 1/a is 1/b
+  else
+    a isnt a and b isnt b
+
+# A recursive functional equivalence helper; uses egal for testing equivalence.
+arrayEgal = (a, b) ->
+  if egal a, b then yes
+  else if a instanceof Array and b instanceof Array
+    return no unless a.length is b.length
+    return no for el, idx in a when not arrayEgal el, b[idx]
+    yes
+
+global.eq      = (a, b, msg) -> ok egal(a, b), msg
+global.arrayEq = (a, b, msg) -> ok arrayEgal(a,b), msg
 
 # When all the tests have run, collect and print errors.
 # If a stacktrace is available, output the compiled function source.
@@ -63,18 +84,35 @@ process.on 'exit', ->
     console.log "  #{error.source}" if error.source
   return
 
-# Run every test in the `test` folder, recording failures.
-args = process.argv.slice(2)
-files = if args.length then args else fs.readdirSync 'test'
-for file in files when file.match /\.coffee$/i
-  if not file.match /^x?test\//
-    currentFile = filename = path.join 'test', file
-  else
-    currentFile = filename = file
-  code = fs.readFileSync filename
-  try
-    CoffeeScript.run code.toString(), {filename}
-  catch error
-    failures.push {filename, error}
+# Run every test requested, recording failures.
+exports.run = (paths) ->
+  paths ?= process.argv.slice(2)
+  paths = ['test'] if not paths.length
+  files = []
+  find = (path) ->
+    try
+      stat = fs.lstatSync path
+    catch error
+      return
+    if stat.isFile()
+      if path.match /\.coffee$/i
+        # XXX this is a local hack
+        if not path.match /\/src\//
+          files.push path
+    else if stat.isDirectory()
+      for p in fs.readdirSync(path)
+        find path + '/' + p
 
-return not failures.length
+  for path in paths
+    find path
+
+  for file in files
+    currentFile = filename = file
+    code = String fs.readFileSync filename
+    try
+      require.main = {}
+      CoffeeScript.run code, {filename}
+    catch error
+      failures.push {filename, error}
+
+  return not failures.length
