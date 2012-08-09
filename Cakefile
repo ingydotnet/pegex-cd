@@ -18,6 +18,8 @@ if enableColors
 task 'build', 'build the Pegex framework', build = (cb) ->
   exec 'coffee --compile --output lib/ src/', (err) ->
     throw err if err
+  exec 'coffee --compile --output test/lib/ test/src/', (err) ->
+    throw err if err
 
 task 'test', 'run the Pegex test suite', ->
   runTests CoffeeScript
