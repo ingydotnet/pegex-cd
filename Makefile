@@ -1,4 +1,4 @@
-.PHONY: build test node clean purge help
+.PHONY: build test node clean purge help node
 
 ALL_LIB := $(shell find src -type d)
 ALL_LIB := $(ALL_LIB:src/%=lib/%)
@@ -38,12 +38,15 @@ test/lib/%.js: test/src/%.coffee
 test xtest: build
 	coffee -e '(require "./test/lib/Test/Harness").run()' $@
 
-node: build pkg/node
-	rm -fr node/lib
-	cp -r lib node/lib
+node: clean build
+	mkdir $@
+	cp -r lib doc test $@/
+	perl -MYAML::XS -MJSON::XS -e \
+	    'print encode_json YAML::XS::LoadFile(shift(@ARGV))' \
+	    package.yaml > $@/package.json
 
 clean purge:
-	rm -fr node_modules lib test/lib pkg
+	rm -fr node_modules lib test/lib node
 
-$(ALL_LIB) $(ALL_TEST_LIB) pkg/node:
+$(ALL_LIB) $(ALL_TEST_LIB):
 	mkdir -p $@
