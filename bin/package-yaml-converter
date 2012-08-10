@@ -1,0 +1,14 @@
+#!/usr/bin/env perl
+
+use strict;
+use YAML::XS;
+use JSON::XS;
+
+my $filename = shift(@ARGV);
+my $package = YAML::XS::LoadFile($filename);
+
+my $npm = delete $package->{npm} || {};
+
+$package = +{%$package, %$npm};
+
+print encode_json $package;

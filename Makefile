@@ -41,9 +41,7 @@ test xtest: build
 node: clean build
 	mkdir $@
 	cp -r lib doc test $@/
-	perl -MYAML::XS -MJSON::XS -e \
-	    'print encode_json YAML::XS::LoadFile(shift(@ARGV))' \
-	    package.yaml > $@/package.json
+	./bin/package-yaml-converter package.yaml > $@/package.json
 
 clean purge:
 	rm -fr node_modules lib test/lib node
