@@ -1,4 +1,7 @@
 + Rename repo to pegex-cdent
 + Redo all tests to use the real TestML data section
 + finish `make node`
-- Create a test/Makefile
++ Create a test/Makefile
+- Read NPM docs and verify things are good
+- Add an INSTALL.md file explaining how to dev bootstrap
+
