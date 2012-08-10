@@ -1,0 +1,24 @@
+name: Pegex
+description: Acmeist Parsing Framework
+version: 0.0.1
+licenses:
+- type: MIT
+  url: https://raw.github.com/ingydotnet/pegex-coffee/master/LICENSE
+
+author: Ingy döt Net
+keywords: [pegex, parsing, language, acmeism]
+
+homepage: http://pegex.org
+repository:
+  url: git://github.com/ingydotnet/pegex-coffee.git
+  type: git
+bugs: https://github.com/ingydotnet/pegex-coffee/issues
+
+npm:
+  main: ./lib/Pegex
+  directories:
+    lib: ./lib
+  engines:
+    node: '>=0.4.0'
+  devDependencies:
+    coffee-script: '>=1.3.3'
