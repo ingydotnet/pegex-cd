@@ -1,0 +1,14 @@
+#!/usr/bin/env coffee
+
+YAML = require 'js-yaml'
+fs = require 'fs'
+
+data = YAML.load fs.readFileSync process.argv.pop()
+
+# Rework data for npm
+npm = data.npm
+delete data.npm
+for k, v of npm
+  data[k] = v
+
+console.log JSON.stringify data, null, 2

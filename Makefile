@@ -41,7 +41,7 @@ test xtest: build
 node: clean build
 	mkdir $@
 	cp -r lib doc test $@/
-	./bin/package-yaml-converter package.yaml > $@/package.json
+	./bin/cdent-package-yaml-converter package.yaml > $@/package.json
 
 clean purge:
 	rm -fr node_modules lib test/lib node
