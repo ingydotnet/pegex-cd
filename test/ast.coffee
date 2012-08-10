@@ -29,7 +29,7 @@
 # 
 # 
 
-{parse_testml_data} = require './lib/parse-testml-data'
+require './lib/parse-testml-data'
 
 data = parse_testml_data '''
 === Single Regex - Single Capture

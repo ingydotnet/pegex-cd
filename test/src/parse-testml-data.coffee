@@ -1,5 +1,6 @@
-exports.parse_testml_data = (text) ->
+global.parse_testml_data = (text) ->
   data = []
+  text = text.replace /^#.*\n/gm, ''
   if not text.match /^===/
     throw "Bad data"
   while text.length
@@ -20,14 +21,17 @@ exports.parse_testml_data = (text) ->
       prev = section
       section = section.replace /^--- (\w+)\n([\s\S]*?)(?=(\n$|\n---))/, ''
       if prev != section
-        block[RegExp.$1] = RegExp.$2 + "\n"
+        [key, val] = [RegExp.$1, RegExp.$2]
+        val = val.replace /^\\/gm, ''
+        block[key] = val + "\n"
       else
         section = section.replace /^--- (\w+):\s+(.*?)\s*\n/m, ''
         if prev != section
           block[RegExp.$1] = RegExp.$2
         else
           xxx "Bad section: #{section}"
-      section = section.replace /[\s\S]*?(?=\n---)\n/, ''
+      if not section.match(/^---/)
+        section = section.replace /[\s\S]*?(?=\n---)\n/, ''
 
     data.push block
   data
