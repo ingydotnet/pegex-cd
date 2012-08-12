@@ -15,5 +15,3 @@ modules = [
 for module in modules
   test "Can require #{module}", ->
     ok require "../lib/#{module}"
-
-# vim:set ts=8 sw=2 sts=2:

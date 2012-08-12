@@ -19,17 +19,21 @@ global.parse_testml_data = (text) ->
     section = section.replace /[\s\S]*?(?=\n---)\n/, ''
     while section.match /^---/
       prev = section
-      section = section.replace /^--- (\w+)\n([\s\S]*?)(?=(\n$|\n---))/, ''
+      section = section.replace /^--- (\w+) *(?=(\n$|\n---))/, ''
       if prev != section
-        [key, val] = [RegExp.$1, RegExp.$2]
-        val = val.replace /^\\/gm, ''
-        block[key] = val + "\n"
+        block[RegExp.$1] = ''
       else
-        section = section.replace /^--- (\w+):\s+(.*?)\s*\n/m, ''
+        section = section.replace /^--- (\w+)\n([\s\S]*?)(?=(\n$|\n---))/, ''
         if prev != section
-          block[RegExp.$1] = RegExp.$2
+          [key, val] = [RegExp.$1, RegExp.$2]
+          val = val.replace /^\\/gm, ''
+          block[key] = val + "\n"
         else
-          xxx "Bad section: #{section}"
+          section = section.replace /^--- (\w+):\s+(.*?)\s*\n/m, ''
+          if prev != section
+            block[RegExp.$1] = RegExp.$2
+          else
+            xxx "Bad section: #{section}"
       if not section.match(/^---/)
         section = section.replace /[\s\S]*?(?=\n---)\n/, ''
 

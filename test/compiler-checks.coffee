@@ -12,7 +12,6 @@ data = parse_testml_data '''
 # XXX grammar needs blank line here, because of testml parser bug
 === Empty Grammar
 --- grammar
-
 --- yaml
 {}
 
@@ -181,12 +180,12 @@ a:
 
 tests = []
 for t in data
-  continue if t.SKIP
-  if t.ONLY
+  continue if t.SKIP?
+  if t.ONLY?
     tests = [t]
     break
   tests.push t
-  break if t.LAST
+  break if t.LAST?
 
 for t in tests
   t.grammar += "\n"
