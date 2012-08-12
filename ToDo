@@ -2,6 +2,8 @@
 + Redo all tests to use the real TestML data section
 + finish `make node`
 + Create a test/Makefile
-- Read NPM docs and verify things are good
-- Add an INSTALL.md file explaining how to dev bootstrap
++ Read NPM docs and verify things are good
++ Rename .coffee files to .uni
 
+- Add an INSTALL.md file explaining how to dev bootstrap
+- Fork coffee-script and work it into uniscript
