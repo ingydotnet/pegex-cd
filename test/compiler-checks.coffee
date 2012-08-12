@@ -188,7 +188,5 @@ for t in data
   break if t.LAST?
 
 for t in tests
-  t.grammar += "\n"
-  t.yaml += "\n"
   test t.label, ->
     deepEqual compile(t.grammar), YAML.load t.yaml

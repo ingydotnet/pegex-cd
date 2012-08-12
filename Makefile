@@ -31,8 +31,14 @@ test xtest: build
 	coffee -e '(require "./test/lib/Test/Harness").run()' $@
 
 node: clean build
-	mkdir -p $@ $@/test
-	cp -r lib doc test LICENSE* $@/
+	mkdir -p $@/test
+	cp -r \
+	    LICENSE* \
+	    README* \
+	    doc \
+	    lib \
+	    test \
+	    $@/
 	cp -r test/lib $@/test/
 	./bin/cdent-package-yaml-converter package.yaml > $@/package.json
 
