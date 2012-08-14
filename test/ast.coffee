@@ -9,7 +9,6 @@ parse = (grammar, input) ->
 
 data = parse_testml_data '''
 === Single Regex - Single Capture
---- ONLY
 --- grammar
 a: /x*(y*)z*<EOL>/
 --- input

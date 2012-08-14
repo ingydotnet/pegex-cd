@@ -68,7 +68,9 @@ global.Pegex.Parser = exports.Parser = class Parser
       return
     match = match[0]
     match = @receiver.finalize match rule if @receiver.constructor::finalize
-    match = {rule: []} unless match
+    unless match
+      match = {}
+      match[rule] = []
     if rule == 'TOP'
       match = match['TOP'] ? match
     match
