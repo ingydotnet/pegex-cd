@@ -1,5 +1,5 @@
 name: Pegex
-description: Acmeist Parsing Framework
+description: Acmeist PEG Parsing Framework
 version: 0.0.1
 licenses:
 - type: MIT
