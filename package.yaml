@@ -15,6 +15,7 @@ repository:
 bugs: https://github.com/ingydotnet/pegex-cdent/issues
 
 npm:
+  name: pegex
   main: ./lib/Pegex
   directories:
     lib: ./lib
