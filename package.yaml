@@ -1,6 +1,6 @@
 name: Pegex
 description: Acmeist PEG Parsing Framework
-version: 0.0.2
+version: 0.0.3
 licenses:
 - type: MIT
   url: https://raw.github.com/ingydotnet/pegex-cdent/master/LICENSE
@@ -17,7 +17,7 @@ repository:
   url: git://github.com/ingydotnet/pegex-cdent.git
   type: git
 bugs:
-  name: https://github.com/ingydotnet/pegex-cdent/issues
+  url: https://github.com/ingydotnet/pegex-cdent/issues
 
 npm:
   name: pegex
