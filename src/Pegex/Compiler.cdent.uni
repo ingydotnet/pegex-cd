@@ -83,7 +83,8 @@ global.Pegex.Compiler = exports.Compiler = class Compiler
       regexp['.rgx'] = re
 
   native: ->
-    @js_regexes @tree
+    # XXX precompilation not working yet
+    # @js_regexes @tree
     @
 
   js_regexes: (node) ->

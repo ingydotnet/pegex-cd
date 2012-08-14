@@ -1,38 +1,15 @@
-# {Compiler} = require '../lib/Pegex/Compiler'
-
-# use TestML -run,
-#     -require_or_skip => 'YAML::XS';
-# 
-# use Pegex;
-# use YAML::XS;
-# 
-# sub parse {
-#     my $grammar = (shift)->value;
-#     my $input = (shift)->value;
-#     my $pegex = pegex($grammar);
-#     $pegex->tree;
-#     return $pegex->parse($input);
-# }
-# 
-# sub yaml {
-#     my $data = (shift)->value;
-#     my $yaml = YAML::XS::Dump($data);
-#     $yaml =~ s/^---\s+//;
-#     $yaml =~ s/'(\d+)':/$1:/g;
-#     return $yaml;
-# }
-# 
-# __DATA__
-# %TestML 1.0
-# 
-# Plan = 10;
-# 
-# 
-
+{pegex} = require '../lib/Pegex'
 require './lib/parse-testml-data'
+YAML = require 'js-yaml'
+
+parse = (grammar, input) ->
+  parser = pegex grammar
+  parser.parse input
+
 
 data = parse_testml_data '''
 === Single Regex - Single Capture
+--- ONLY
 --- grammar
 a: /x*(y*)z*<EOL>/
 --- input
@@ -165,7 +142,17 @@ a:
     - d: y
   - c:
     - d: y
-
 '''
 
-# *grammar.parse(*input).yaml == *ast;
+tests = []
+for t in data
+  continue if t.SKIP?
+  if t.ONLY?
+    tests = [t]
+    break
+  tests.push t
+  break if t.LAST?
+
+for t in tests
+  test t.label, ->
+    deepEqual parse(t.grammar, t.input), YAML.load t.ast

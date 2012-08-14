@@ -12,9 +12,9 @@ require '../Pegex/Receiver'
 global.Pegex.Parser = exports.Parser = class Parser
 
   constructor: (@grammar, @receiver) ->
-    @receiver ||= new Pegex.Receiver
+    @receiver ?= new Pegex.Receiver
     @throw_on_error = on
-    @wrap = @receiver.wrap
+    @wrap = @receiver.wrap ? no
     @input = ''
     @buffer = ''
     @error = null
@@ -24,14 +24,18 @@ global.Pegex.Parser = exports.Parser = class Parser
     @debug = off
 
   parse: (input, start_rule) ->
+    # XXX Not sure why but sometimes start_rule is an Array
+    if start_rule instanceof Array
+      start_rule = start_rule.shift()
     @input = input
     if typeof @input == 'string'
       @input = new Pegex.Input {string: @input}
     @input.open()
     @buffer = @input.read()
-    grammar = @grammar ?
+    @grammar ?
       throw "No 'grammar'. Can't parse"
-    if typeof grammar == 'string'
+
+    if typeof @grammar == 'string'
       Grammar = require '../' + grammar
       @grammar = new Pegex.Grammar
     else
@@ -162,11 +166,16 @@ global.Pegex.Parser = exports.Parser = class Parser
         if sub?
           match = [ sub.call @receiver, match[0] ]
         else if @wrap and not parent['-pass'] or parent['-wrap']
-          match = if match.length then [ {ref: match[0]} ] else []
+          if match.length
+            value = match[0]
+            match = [{}]
+            match[0][ref] = value
+          else
+            match = []
     else
       @trace "not_#{ref}" if trace
       match = 0
-    say match if match and @debug
+    console.log match if match and @debug
     match
 
   xxx_terminator_hack: 0
@@ -179,6 +188,7 @@ global.Pegex.Parser = exports.Parser = class Parser
     re = new RegExp regexp, 'g'
     re.lastIndex = start
     m = re.exec @buffer
+    # XXX Not sure how to match at 'start' position
     return 0 if not m? or m.index != start
     finish = re.lastIndex
     match = []

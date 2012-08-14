@@ -15,5 +15,5 @@ exports.pegex = (grammar, options) ->
 
   options ?= {}
   wrap = options.wrap ? true
-  receiver = options.receiver ? new Pegex.Receiver(wrap)
-  new Pegex.Grammar(grammar, receiver)
+  receiver = options.receiver ? new Pegex.Receiver({wrap})
+  new Pegex.Grammar({text: grammar, receiver})

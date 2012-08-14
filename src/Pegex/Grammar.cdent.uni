@@ -10,19 +10,20 @@ global.Pegex.Grammar = exports.Grammar = class Grammar
 
   make_tree: ->
     throw "Can't create a grammar. No 'text' or 'tree'." unless @text
-    Compiler = require '../Pegex/Compiler'
-    Compiler::compile(text).tree
+    require '../Pegex/Compiler'
+    compiler = new Pegex.Compiler
+    compiler.compile(@text).tree
 
   parse: (input, start_rule...) ->
     {parser} = @
-    if parser?
+    if ! parser?
       require '../Pegex/Parser'
       {receiver} = @
-      if typeof receiver != 'object'
+      if ! receiver?
+        require '../Pegex/Pegex/AST'
+        receiver = new Pegex.Pegex.AST
+      else if typeof receiver != 'object'
         Receiver = require receiver
         receiver = new Receiver()
-      parser = new Pegex.Parser(
-        'grammar': @
-        'receiver': receiver
-      )
+      parser = new Pegex.Parser(@, receiver)
     parser.parse input, start_rule
