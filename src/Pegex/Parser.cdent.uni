@@ -20,8 +20,7 @@ global.Pegex.Parser = exports.Parser = class Parser
     @error = null
     @position = 0
     @farthest = 0
-    @debug = on
-    @debug = off
+    @debug = Pegex.DEBUG ? off
 
   parse: (input, start_rule) ->
     # XXX Not sure why but sometimes start_rule is an Array
@@ -67,7 +66,7 @@ global.Pegex.Parser = exports.Parser = class Parser
       @throw_error "Parse document failed for some reason"
       return
     match = match[0]
-    match = @receiver.finalize match rule if @receiver.constructor::finalize
+    match = @receiver.final match, rule if @receiver.constructor::final
     unless match
       match = {}
       match[rule] = []
