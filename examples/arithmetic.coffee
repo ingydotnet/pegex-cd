@@ -74,7 +74,7 @@ class Calculator
 
 test = (input) -> console.log(
   "#{input} =",
-  pegex(grammar, {receiver: (new Calculator), wrap:1}).parse input
+  pegex(grammar, {receiver: (new Calculator)}).parse input
 )
 
 test '2'
