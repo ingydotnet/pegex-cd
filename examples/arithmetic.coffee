@@ -10,19 +10,42 @@
 # Originally inspired by:
 #   https://github.com/dmajda/pegjs/blob/master/examples/arithmetics.pegjs
 
-{pegex} = require '../lib/Pegex'
+say = console.log
 
-grammar = """
-expr:   item+ % op
-op:     /~([<PLUS><DASH><STAR><SLASH><CARET>])~/
-item:   num | group
-num:    /(<DIGIT>+)/
-group:  /~<LPAREN>~/
-        expr
-        /~<RPAREN>~/
+{pegex} = require '../lib/Pegex'
+require '../lib/Pegex/Receiver'
+
+calculator_pegex_grammar = """
+# This is a grammar that will match an arithmetic expression like:
+#    -5 * ( 23 - 2^3)
+# Pegex.Parser will apply this grammar to an input and pass the matched data
+# on to a receiver object. A receiver class called Calculator (below) will
+# turn the parse events into a RPN (reverse polish notation) stack and
+# evaluate it. The data that gets "received" is parenthesized in regex
+# captures below.
+
+# An expression is a list of one or more values separated by operators
+expr: value+ % op
+
+# Capture an operator. One of: + - * / ^ (with optional whitespace)
+op: /~([<PLUS><DASH><STAR><SLASH><CARET>])~/
+
+# A value is a number or a parenthesized expression
+value: num | group
+
+# Capture a number: # -# #.# or -#.#
+num: /(
+  <DASH>?
+  <DIGIT>+
+  (:<DOT><DIGIT>+)?
+)/
+
+# Parenthesized expression (with option whitespace around the parens)
+group:  /~<LPAREN>~/ expr /~<RPAREN>~/
 """
 
-class Calculator
+class Calculator extends Pegex.Receiver
+  # Operator function, precedence and associativity table:
   operators =
     '+': f: 'add', p: 1, a: 'left'
     '-': f: 'sub', p: 1, a: 'left'
@@ -30,8 +53,10 @@ class Calculator
     '/': f: 'div', p: 2, a: 'left'
     '^': f: 'exp', p: 3, a: 'right'
 
+  # Cast the matched numeric Strings into actual Numbers
   got_num: (num) -> Number num
 
+  # Remove the wrapper array from an expression
   got_group: ([expr]) -> expr
 
   # http://en.wikipedia.org/wiki/Shunting-yard_algorithm
@@ -47,9 +72,11 @@ class Calculator
         out.push ops.shift()
       ops.unshift op
       out.push expr.shift()
-    out.concat ops
+    @flatten out.concat ops
 
+  # Expression should now be an RPN array.
   final: (expr) ->
+    @.rpn_expression = [].concat expr
     @evaluate expr
 
   evaluate: (expr) ->
@@ -72,10 +99,12 @@ class Calculator
   do_div: (a, b) -> a / b
   do_exp: (a, b) -> Math.pow(a, b)
 
-test = (input) -> console.log(
-  "#{input} =",
-  pegex(grammar, {receiver: (new Calculator)}).parse input
-)
+
+test = (input) ->
+  receiver = new Calculator({})
+  grammar = pegex calculator_pegex_grammar, {receiver}
+  result = grammar.parse input
+  console.log "#{input} = #{result}	RPN( #{receiver.rpn_expression} )"
 
 test '2'
 test '2 + (4 + 6) * 8'
