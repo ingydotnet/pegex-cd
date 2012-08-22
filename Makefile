@@ -3,8 +3,8 @@
 ALL_LIB := $(shell find src -type d)
 ALL_LIB := $(ALL_LIB:src/%=lib/%)
 
-ALL_CDENT := $(shell find src -name *.cdent.uni)
-ALL_JS := $(ALL_CDENT:src/%.cdent.uni=lib/%.js)
+ALL_CDENT := $(shell find src -name *.cd.uni)
+ALL_JS := $(ALL_CDENT:src/%.cd.uni=lib/%.js)
 
 default: help
 
@@ -24,7 +24,7 @@ help:
 build: $(ALL_LIB) $(ALL_JS)
 	@make -C test $@
 
-lib/%.js: src/%.cdent.uni
+lib/%.js: src/%.cd.uni
 	coffee --compile -p $< > $@
 
 test xtest: build
