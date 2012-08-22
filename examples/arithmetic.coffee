@@ -56,9 +56,6 @@ class Calculator extends Pegex.Receiver
   # Cast the matched numeric Strings into actual Numbers
   got_num: (num) -> Number num
 
-  # Remove the wrapper array from an expression
-  got_group: ([expr]) -> expr
-
   # http://en.wikipedia.org/wiki/Shunting-yard_algorithm
   got_expr: (expr) ->
     [out, ops] = [[],[]]
