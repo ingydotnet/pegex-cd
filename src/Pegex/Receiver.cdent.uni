@@ -1,9 +1,8 @@
 require '../Pegex'
 
 global.Pegex.Receiver = exports.Receiver = class Receiver
-  constructor: (args)->
-    args ?= {}
-    {@wrap} = args
+  constructor: (a = {})->
+    {@wrap} = a
     @wrap ?= no
 
   flatten: (array, times) ->

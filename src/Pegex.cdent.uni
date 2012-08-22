@@ -3,17 +3,32 @@ name:      Pegex
 abstract:  Pegex - Acmeist Parsing Framework
 author:    Ingy döt Net <ingy@ingy.net>
 license:   MIT
-copyright: 2011
+copyright: 2010-2012
 ###
 
 global.Pegex = exports.Pegex = class Pegex
   VERSION: '0.0.1'
 
-exports.pegex = (grammar, options) ->
+exports.pegex = (grammar_text, options) ->
+  require './Pegex/Parser'
   require './Pegex/Grammar'
-  require './Pegex/Receiver'
 
+  unless grammar_text?
+    throw "pegex() requires at least 1 argument, a pegex grammar string"
   options ?= {}
-  wrap = options.wrap ? true
-  receiver = options.receiver ? new Pegex.Receiver({wrap})
-  new Pegex.Grammar({text: grammar, receiver})
+  new Pegex.Parser new Pegex.Grammar(text: grammar_text), _get_receiver options
+
+_get_receiver = (options) ->
+  if options.receiver?
+    receiver = options.receiver
+    if typeof receiver == 'string'
+      require receiver
+      receiver = new receiver
+  else
+    require './Pegex/Receiver'
+    receiver = new Pegex.Receiver
+    if ! options.wrap?
+      receiver.wrap = on
+  if options.wrap?
+    receiver.wrap = options.wrap
+  receiver

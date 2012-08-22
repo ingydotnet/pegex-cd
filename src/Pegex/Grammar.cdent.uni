@@ -2,28 +2,21 @@ require '../Pegex'
 
 global.Pegex.Grammar = exports.Grammar = class Grammar
   constructor: (a = {}) ->
-    {@text} = a; @text ?= ''
-    {@tree} = a
-    {@parser} = a
-    {@receiver} = a
-    {@receiver} = a
+    {@file, @text, @tree} = a
+    @make_tree
+    @
 
   make_tree: ->
-    throw "Can't create a grammar. No 'text' or 'tree'." unless @text
+    return @tree if @tree?
+    if ! @text?
+      if @file?
+        require 'fs'
+        @text = fs.readFileSync(@file)
+      else
+        throw "Can't create a grammar. No tree or text or file."
     require '../Pegex/Compiler'
     compiler = new Pegex.Compiler
-    compiler.compile(@text).tree
+    @tree = compiler.compile(@text).tree
 
-  parse: (input, start_rule...) ->
-    {parser} = @
-    if ! parser?
-      require '../Pegex/Parser'
-      {receiver} = @
-      if ! receiver?
-        require '../Pegex/Pegex/AST'
-        receiver = new Pegex.Pegex.AST
-      else if typeof receiver != 'object'
-        Receiver = require receiver
-        receiver = new Receiver()
-      parser = new Pegex.Parser(@, receiver)
-    parser.parse input, start_rule
+  # TODO later
+  # compile_into_module: (module) ->

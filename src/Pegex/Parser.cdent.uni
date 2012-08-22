@@ -20,7 +20,7 @@ global.Pegex.Parser = exports.Parser = class Parser
     @error = null
     @position = 0
     @farthest = 0
-    @debug = Pegex.DEBUG ? off
+    @debug = Pegex.Parser.Debug ? off
 
   parse: (input, start_rule) ->
     # XXX Not sure why but sometimes start_rule is an Array

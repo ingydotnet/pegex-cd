@@ -6,7 +6,6 @@ parse = (grammar, input) ->
   parser = pegex grammar
   parser.parse input
 
-
 data = parse_testml_data '''
 === Single Regex - Single Capture
 --- grammar
