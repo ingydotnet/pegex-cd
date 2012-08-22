@@ -10,8 +10,6 @@
 # Originally inspired by:
 #   https://github.com/dmajda/pegjs/blob/master/examples/arithmetics.pegjs
 
-say = console.log
-
 {pegex} = require '../lib/Pegex'
 require '../lib/Pegex/Receiver'
 
@@ -25,7 +23,7 @@ calculator_pegex_grammar = """
 # captures below.
 
 # An expression is a list of one or more values separated by operators
-expr: value+ % op
+expr: value (op value)*
 
 # Capture an operator. One of: + - * / ^ (with optional whitespace)
 op: /~([<PLUS><DASH><STAR><SLASH><CARET>])~/
@@ -58,6 +56,9 @@ class Calculator extends Pegex.Receiver
 
   # http://en.wikipedia.org/wiki/Shunting-yard_algorithm
   got_expr: (expr) ->
+    tail = expr.pop()
+    for elem in tail
+      expr = expr.concat elem
     [out, ops] = [[],[]]
     out.push expr.shift()
     while expr.length
