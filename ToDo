@@ -1,6 +1,6 @@
 + Rename repo to pegex-cdent
 + Redo all tests to use the real TestML data section
-+ finish `make node`
++ finish `make npm`
 + Create a test/Makefile
 + Read NPM docs and verify things are good
 + Rename .coffee files to .uni

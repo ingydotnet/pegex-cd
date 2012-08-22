@@ -1,4 +1,4 @@
-.PHONY: build test node clean purge help node
+.PHONY: build test npm clean purge help
 
 ALL_LIB := $(shell find src -type d)
 ALL_LIB := $(ALL_LIB:src/%=lib/%)
@@ -15,7 +15,7 @@ help:
 	@echo '    make build  - Compile stuff'
 	@echo '    make test   - Run the tests'
 	@echo ''
-	@echo '    make node   - Make a Node.js package'
+	@echo '    make npm    - Make a Node.js package'
 	@echo ''
 	@echo '    make clean  - Clean up'
 	@echo '    make help   - Get Help'
@@ -30,7 +30,7 @@ lib/%.js: src/%.cdent.uni
 test xtest: build
 	coffee -e '(require "./test/lib/Test/Harness").run()' $@
 
-node: clean build
+npm: clean build
 	mkdir -p $@/test
 	cp -r \
 	    LICENSE* \
@@ -43,7 +43,7 @@ node: clean build
 	./bin/cdent-package-yaml-converter package.yaml > $@/package.json
 
 clean purge:
-	rm -fr node_modules lib node
+	rm -fr node_modules lib npm
 	@make -C test $@
 
 $(ALL_LIB):
