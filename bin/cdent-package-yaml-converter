@@ -8,6 +8,7 @@ data = YAML.load fs.readFileSync process.argv.pop()
 # Rework data for npm
 npm = data.npm
 delete data.npm
+delete data.copyright
 for k, v of npm
   data[k] = v
 
