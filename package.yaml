@@ -4,6 +4,7 @@ version: 0.0.3
 licenses:
 - type: MIT
   url: https://raw.github.com/ingydotnet/pegex-cdent/master/LICENSE
+copyright: 2010-2012
 
 author:
   name: Ingy döt Net
