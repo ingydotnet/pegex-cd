@@ -16,6 +16,7 @@ class Pegex
       @farthest = 0
       @optimized = false
       @debug = false
+      @debug = true
       yield self
     end
 
@@ -87,9 +88,11 @@ class Pegex
         end
       end
       min, max = node.values_at '+min', '+max'
-      node['+min'] ||= defined?(max) ? 0 : 1
-      node['+max'] ||= defined?(min) ? 0 : 1
+      node['+min'] ||= max == nil ? 1 : 0
+      node['+max'] ||= min == nil ? 1 : 0
       node['+asr'] ||= nil
+      node['+min'] = node['+min'].to_i
+      node['+max'] = node['+max'].to_i
 
       if ['any', 'all'].include? node['kind']
         node['rule'].each do |elem|
@@ -104,6 +107,8 @@ class Pegex
           rule['action'] = receiver.method 'gotrule'
         end
         node['method'] = self.method 'match_ref_trace' if @debug
+      elsif node['kind'] == 'rgx'
+        node['rule'] = Regexp.new("\\A#{node['.rgx']}")
       end
       if sep = node['.sep']
         optimize_node sep
@@ -124,6 +129,49 @@ class Pegex
         match.concat return_
         break if max == 1
       end
+      if max != 1
+        match = [match]
+        if ((@position = position) > @farthest)
+          @farthest = position
+        end
+      end
+      result = (count >= min and (max == 0 or count <= max)) ^ (assertion == -1)
+      if (not result or assertion)
+        if ((@position = position) > @farthest)
+          @farthest = position
+        end
+      end
+
+      return (result ? next_['-skip'] ? [] : match : false)
+    end
+
+    def match_next_with_sep(next_)
+      rule, method, kind, min, max, sep =
+        next_.values_at 'rule', 'method', 'kind', '+min', '+max', '.sep'
+
+      position, match, count, scount, smin, smax =
+        @position, [], 0, 0, sep.values_at('+min', '+max')
+
+      while return_ = method.call(rule, next_)
+        position = @position
+        count += 1
+        match.concat return_
+        return_ = match_next(sep) or break
+        XXX return_
+        # TODO
+        scount += 1
+      end
+      if max != 1
+        match = [match]
+      end
+      result = (count >= min and (max == 0 or count <= max))
+      if count == scount and not sep['+eok']
+        if ((@position = position) > @farthest)
+          @farthest = position
+        end
+      end
+
+      return (result ? next_['-skip'] ? [] : match : false)
     end
 
     def match_ref(ref, parent)
@@ -134,16 +182,75 @@ class Pegex
       [ rule['action'].call(@receiver, match.first) ]
     end
 
-    def match_rgx
+    def match_rgx(regexp, parent=nil)
+      position = @position
+      string = @buffer[position .. -1]
+      (m = string.match regexp) or return false
+      position += m[0].length
+      match = m[1..-1]
+      match = [ match ] if m.length > 1
+      if (@position = position) > @farthest
+        @farthest = position
+      end
+      return match
     end
 
     def match_all(list, parent=nil)
+      position, set, len = @position, [], 0
+      list.each do |elem|
+        if (match = match_next(elem))
+          if !elem['+asr'] and !elem['-skip']
+            set.concat match
+            len += 1
+          end
+        else
+          if (@position = position) > @farthest
+            @farthest = position
+          end
+          return false
+        end
+      end
+      set = [set] if len > 1
+      return set
     end
 
-    def match_any
+    def match_any(list, parent=nil)
+      list.each do |elem|
+        if (match = match_next elem)
+          return match
+        end
+      end
+      return false
     end
 
-    def match_err
+    def match_err(error, parent=nil)
+      throw_error error
+    end
+
+    def match_ref_trace(ref, parent)
+      rule = @tree[ref]
+      trace_on = (! rule['+asr'])
+      trace("try_#{ref}") if trace_on
+      result = nil
+      if (result = match_ref(ref, parent))
+        trace("got_#{ref}") if trace_on
+      else
+        trace("not_#{ref}") if trace_on
+      end
+      return result
+    end
+
+    def trace(action)
+      indent = !!(action.match(/^try_/))
+      @indent ||= 0
+      @indent -= 1 unless indent
+      $stderr.print ' ' * @indent
+      @indent += 1 if indent
+      snippet = @buffer[@position..-1]
+      snippet = snippet[0..30] + '...' if snippet.length > 30;
+      snippet.gsub!(/\n/, "\\n")
+      $stderr.printf "%-30s", action
+      $stderr.print (indent ? " >#{snippet}<\n" : "\n")
     end
 
     def throw_error(msg)

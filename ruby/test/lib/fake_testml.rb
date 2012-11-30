@@ -61,6 +61,7 @@ class FakeTestML < Test::Unit::TestCase
     return if @error and func != 'catch'
     return args.first if func.empty?
     args << block if func =~ /^assert_/
+    return method(func).call(*args) 
     begin
       return method(func).call(*args) 
     rescue

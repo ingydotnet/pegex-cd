@@ -2,6 +2,9 @@ require 'pegex/compiler'
 
 module TestPegex
   def compile(grammar_text)
+    puts "Parsing this Pegex grammar:"
+    puts grammar_text
+    puts
     return Pegex::Compiler.new.parse(grammar_text).tree
   end
 
