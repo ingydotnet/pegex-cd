@@ -9,6 +9,8 @@ class Pegex
     attr_accessor :grammar
     attr_accessor :receiver
 
+    $dummy = [1]
+
     def initialize
       @position = 0
       @farthest = 0
@@ -63,6 +65,89 @@ class Pegex
       end
 
       return match.first
+    end
+
+    def optimize_grammar(start)
+      return if @optimized
+      @tree.each_pair do |name, node|
+        next if node.kind_of?(String)
+        optimize_node node
+      end
+      optimize_node({'.ref' => start})
+      @optimized = true
+    end
+
+    def optimize_node(node)
+      ['ref', 'rgx', 'all', 'any', 'err', 'code', 'xxx'].each do |kind|
+        raise if kind == 'xxx'
+        if node['rule'] = node[".#{kind}"]
+          node['kind'] = kind
+          node['method'] = self.method "match_#{kind}"
+          break
+        end
+      end
+      min, max = node.values_at '+min', '+max'
+      node['+min'] ||= defined?(max) ? 0 : 1
+      node['+max'] ||= defined?(min) ? 0 : 1
+      node['+asr'] ||= nil
+
+      if ['any', 'all'].include? node['kind']
+        node['rule'].each do |elem|
+          optimize_node elem
+        end
+      elsif node['kind'] == 'ref'
+        ref = node['rule']
+        rule = @tree[ref]
+        if @receiver.respond_to?("got_#{ref}")
+          rule['action'] = receiver.method "got_#{ref}"
+        elsif receiver.respond_to? 'gotrule'
+          rule['action'] = receiver.method 'gotrule'
+        end
+        node['method'] = self.method 'match_ref_trace' if @debug
+      end
+      if sep = node['.sep']
+        optimize_node sep
+      end
+    end
+
+    def match_next(next_)
+      return match_next_with_sep(next_) if next_['.sep']
+
+      rule, method, kind, min, max, assertion =
+        next_.values_at 'rule', 'method', 'kind', '+min', '+max', '+asr'
+
+      position, match, count = @position, [], 0
+
+      while return_ = method.call(rule, next_)
+        position = @position unless assertion
+        count += 1
+        match.concat return_
+        break if max == 1
+      end
+    end
+
+    def match_ref(ref, parent)
+      rule = @tree[ref]
+      match = match_next(rule) or return false
+      return $dummy unless rule['action']
+      @rule, @parent = ref, parent
+      [ rule['action'].call(@receiver, match.first) ]
+    end
+
+    def match_rgx
+    end
+
+    def match_all(list, parent=nil)
+    end
+
+    def match_any
+    end
+
+    def match_err
+    end
+
+    def throw_error(msg)
+      raise msg
     end
   end
 end
