@@ -40,7 +40,8 @@ class FakeTestML < Test::Unit::TestCase
 
   def assert_equals(got, want, block)
     if got != want
-      File.open('/tmp/got', 'w') {|f| f.write(got) }
+      on_fail if respond_to? on_fail
+      file.open('/tmp/got', 'w') {|f| f.write(got) }
       File.open('/tmp/want', 'w') {|f| f.write(want) }
       puts `diff -u /tmp/want /tmp/got`
     end

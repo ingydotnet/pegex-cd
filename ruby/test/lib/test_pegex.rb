@@ -18,12 +18,15 @@ end
 
 module TestPegex
   def compile(grammar_text)
-    puts "Parsing this Pegex grammar:"
-    puts grammar_text
-    puts
     tree = Pegex::Compiler.new.parse(grammar_text).tree
     tree.delete('+toprule')
     return tree
+  end
+
+  def on_fail
+    puts "Parsing this Pegex grammar:"
+    puts grammar_text
+    puts
   end
 
   def yaml(object)
