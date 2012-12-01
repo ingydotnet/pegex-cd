@@ -246,7 +246,6 @@ a:
   .rgx: \.*(\-{3})!!
 
 === Directives
---- SKIP
 --- grammar
 \%grammar foo
 \%version 1.2.3
@@ -256,7 +255,6 @@ a:
 +version: 1.2.3
 
 === Multiple Duplicate Directives
---- SKIP
 --- grammar
 \%grammar foo
 \%include bar
@@ -269,7 +267,6 @@ a:
 - baz
 
 === Meta Lines
---- SKIP
 --- grammar
 %grammar        foo
 %version    1.1.1

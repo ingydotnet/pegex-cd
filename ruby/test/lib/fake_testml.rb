@@ -1,16 +1,15 @@
 require 'test/unit'
-require 'xxx'
 
 class FakeTestML < Test::Unit::TestCase
-  include XXX
+  require 'xxx'; include XXX # XXX
 
-  def require_or_skip(module_)
+  def require_or_skip module_
     require module_
     rescue exit
   end
 
-  def data(input)
-    @testml = parse_tml(input)
+  def data input
+    @testml = parse_tml input
   end
 
   def assert_testml
@@ -19,13 +18,13 @@ class FakeTestML < Test::Unit::TestCase
     data $testml
   end
 
-  def label(text)
+  def label text
     @label = text
   end
 
-  def loop(expr, callback=nil)
+  def loop expr, callback=nil
     assert_testml
-    callback ||= method(:run_test)
+    callback ||= method :run_test
     get_blocks(expr).each do |block|
       @error = nil
       callback.call(block, expr)
@@ -33,31 +32,31 @@ class FakeTestML < Test::Unit::TestCase
     end
   end
 
-  def run_test(block, expr)
+  def run_test block, expr
     block = get_blocks(expr, [block]).first or return
     evaluate expr, block
   end
 
-  def assert_equals(got, want, block)
+  def assert_equals got, want, block
     if got != want
       on_fail if respond_to? 'on_fail'
-      File.open('/tmp/got', 'w') {|f| f.write(got) }
-      File.open('/tmp/want', 'w') {|f| f.write(want) }
+      File.open('/tmp/got', 'w') {|f| f.write got}
+      File.open('/tmp/want', 'w') {|f| f.write want}
       puts `diff -u /tmp/want /tmp/got`
     end
     assert_equal want, got, block[:title]
   end
 
   def catch
-    puts 43
+    fail # TODO
   end
 
-  def evaluate(expr, block)
-    expr = ['', expr] if expr.kind_of?(String)
+  def evaluate expr, block
+    expr = ['', expr] if expr.kind_of? String
     func = expr.first
     args = expr[1..expr.length-1].collect do |ex|
-      if ex.kind_of?(Array)
-        evaluate(ex, block)
+      if ex.kind_of? Array
+        evaluate ex, block
       elsif ex =~ /\A\*(\w+)\z/
         block[:points][$1]
       else
@@ -67,16 +66,16 @@ class FakeTestML < Test::Unit::TestCase
     return if @error and func != 'catch'
     return args.first if func.empty?
     args << block if func =~ /^assert_/
-    return method(func).call(*args) 
+    return method(func).call(*args)
     begin
-      return method(func).call(*args) 
+      return method(func).call(*args)
     rescue
       @error = $!.message
     end
   end
 
-  def get_blocks(expr, blocks=@testml)
-    want = expr.flatten.grep(/^\*/).collect{|ex| ex.gsub(/^\*/, '')}
+  def get_blocks expr, blocks=@testml
+    want = expr.flatten.grep(/^\*/).collect{|ex| ex.gsub /^\*/, ''}
     only = blocks.select{|block| block['ONLY']}
     blocks = only unless only.empty?
     final = []
@@ -97,24 +96,25 @@ class FakeTestML < Test::Unit::TestCase
     return final
   end
 
-  def parse_tml(string)
-    string.gsub!(/^#.*\n/, '')
-    string.gsub!(/^\\/, '')
-    string.gsub!(/^\s*\n/, '')
-    blocks = string.split(/(^===.*?(?=^===|\z))/m)
+  def parse_tml string
+    string.gsub! /^#.*\n/, ''
+    string.gsub! /^\\/, ''
+    string.gsub! /^\s*\n/, ''
+    blocks = string.split /(^===.*?(?=^===|\z))/m
     blocks.reject!{|b| b.empty?}
     blocks.each do |block|
-      block.gsub!(/\n+\z/, "\n")
+      block.gsub! /\n+\z/, "\n"
     end
 
     array = []
     blocks.each do |string_block|
       block = {}
-      string_block.gsub!(/^===\ +(.*?)\ *\n/, '') or raise("No block title! #{string_block}")
+      string_block.gsub! /^===\ +(.*?)\ *\n/, '' \
+        or fail "No block title! #{string_block}"
       block[:title] = $1
       while !string_block.empty? do
-        if string_block.gsub!(/\A---\ +(\w+):\ +(.*)\n/, '') or 
-          string_block.gsub!(/\A---\ +(\w+)\n(.*?)(?=^---|\z)/m, '')
+        if string_block.gsub! /\A---\ +(\w+):\ +(.*)\n/, '' or
+           string_block.gsub! /\A---\ +(\w+)\n(.*?)(?=^---|\z)/m, ''
           key, value = $1, $2
         else
           raise "Failed to parse FakeTestML string:\n#{string_block}"
@@ -129,8 +129,5 @@ class FakeTestML < Test::Unit::TestCase
       array << block
     end
     return array
-  end
-
-  def flatten(list)
   end
 end

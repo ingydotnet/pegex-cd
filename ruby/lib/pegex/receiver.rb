@@ -1,11 +1,9 @@
 $pegex_nil = []
 
-class Pegex
-  class Receiver
-    attr_accessor :parser
+class Pegex::Receiver
+  attr_accessor :parser
 
-    def flatten(array)
-      return array.flatten!
-    end
+  def flatten array
+    return array.flatten!
   end
 end

@@ -3,27 +3,25 @@ require 'pegex/pegex/grammar'
 require 'pegex/pegex/ast'
 require 'pegex/grammar/atoms'
 
-class Pegex
-  class Compiler
-    attr_accessor :tree
+class Pegex::Compiler
+  attr_accessor :tree
 
-    def initialize
-      @tree = {}
+  def initialize
+    @tree = {}
+  end
+
+  def compile
+    fail
+  end
+
+  def parse input
+    parser = Pegex::Parser.new do |p|
+      p.grammar = Pegex::Pegex::Grammar.new
+      p.receiver = Pegex::Pegex::AST.new
     end
 
-    def compile
-      throw
-    end
+    @tree = parser.parse input
 
-    def parse(input)
-      parser = Parser.new do |p|
-        p.grammar = Pegex::Grammar.new
-        p.receiver = Pegex::AST.new
-      end
-
-      @tree = parser.parse(input)
-
-      return self
-    end
+    return self
   end
 end

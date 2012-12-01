@@ -1,38 +1,23 @@
 require 'pegex/compiler'
-
-class Object
-  def recursive_sort; self end
-end
-
-class Array
-  def recursive_sort
-    map &:recursive_sort
-  end
-end
-
-class Hash
-  def recursive_sort
-    Hash[keys.sort.map {|k| [k, self[k].recursive_sort]}]
-  end
-end
+require 'recursive_sort'
 
 module TestPegex
-  def compile(grammar_text)
+  def compile grammar_text
     $grammar_text = grammar_text
     tree = Pegex::Compiler.new.parse(grammar_text).tree
-    tree.delete('+toprule')
+    tree.delete '+toprule'
     return tree
   end
 
-  def yaml(object)
+  def yaml object
     require 'psych'
-    Psych.dump(object.recursive_sort)
+    Psych.dump object.recursive_sort
   end
 
-  def clean(yaml)
-    yaml.sub!(/\A---\s/, '')
-    yaml.gsub!(/'(\d+)'/, '\1')
-    yaml.gsub!(/\+eok: true/, '+eok: 1')
+  def clean yaml
+    yaml.sub! /\A---\s/, ''
+    yaml.gsub! /'(\d+)'/, '\1'
+    yaml.gsub! /\+eok: true/, '+eok: 1'
     return yaml
   end
 
