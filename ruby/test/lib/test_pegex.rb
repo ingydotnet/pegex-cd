@@ -18,15 +18,10 @@ end
 
 module TestPegex
   def compile(grammar_text)
+    $grammar_text = grammar_text
     tree = Pegex::Compiler.new.parse(grammar_text).tree
     tree.delete('+toprule')
     return tree
-  end
-
-  def on_fail
-    puts "Parsing this Pegex grammar:"
-    puts grammar_text
-    puts
   end
 
   def yaml(object)
@@ -37,5 +32,11 @@ module TestPegex
   def clean(yaml)
     yaml.sub!(/\A---\s/, '')
     return yaml.gsub(/'(\d+)'/, '\1')
+  end
+
+  def on_fail
+    puts "Parsing this Pegex grammar:"
+    puts $grammar_text
+    puts
   end
 end

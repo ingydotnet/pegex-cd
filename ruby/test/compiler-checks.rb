@@ -24,7 +24,6 @@ $testml = <<'...'
 {}
 
 === Simple Grammar
---- ONLY
 --- grammar
 a: ( <b> <c>* )+
 b: /x/
@@ -73,6 +72,7 @@ a:
   .ref: x
 
 === Single Rule With Leading Assertion
+--- LAST
 --- grammar
 a: =<x>
 --- yaml
