@@ -14,11 +14,10 @@ class Pegex::Pegex::AST < Pegex::Tree
 
   def got_grammar(got)
     meta_section, rule_section = got
-    # XXX [meta_section, rule_section]
     grammar =
       {'+toprule' => @toprule}.merge(@extra_rules).merge(meta_section)
     rule_section.each do |rule|
-      key, value = rule
+      key, value = rule.first
       grammar[key] = value
     end
     return grammar
@@ -52,7 +51,10 @@ class Pegex::Pegex::AST < Pegex::Tree
 
   def got_bracketed_group(got)
     prefix, group, suffix = got
-    # TODO
+    # TODO prefix
+    unless suffix.empty?
+      set_quantity group, suffix
+    end
     return group
   end
 
@@ -85,8 +87,12 @@ class Pegex::Pegex::AST < Pegex::Tree
 
   def got_rule_reference(got)
     prefix, ref1, ref2, suffix = got
-    ref = ref1 || ref2
+    ref = ref1 || ref2 # TODO: determine if ref1 is falsy enough
     node = { '.ref' => ref }
+    # TODO
+    unless suffix.empty?
+      set_quantity node, suffix
+    end
     # TODO
     return node
   end
@@ -105,4 +111,26 @@ class Pegex::Pegex::AST < Pegex::Tree
   def got_error_message(got)
     XXX got
   end
+
+  def set_quantity object, quantifier
+    case quantifier
+    when ?*
+      object['+min'] = 0
+    when ?+
+      object['+min'] = 1
+    when ??
+      object['+max'] = 1
+    when /^(\d+)\+$/
+      object['+min'] = $1
+    when /^(\d+)\-(\d+)+$/
+      object['+min'] = $1
+      object['+max'] = $2
+    when /^(\d+)$/
+      object['+min'] = $1
+      object['+max'] = $1
+    else
+      fail "Invalid quantifier: '#{quantifier}'"
+    end
+  end
+
 end
