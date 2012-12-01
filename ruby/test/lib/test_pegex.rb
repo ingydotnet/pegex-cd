@@ -31,7 +31,9 @@ module TestPegex
 
   def clean(yaml)
     yaml.sub!(/\A---\s/, '')
-    return yaml.gsub(/'(\d+)'/, '\1')
+    yaml.gsub!(/'(\d+)'/, '\1')
+    yaml.gsub!(/\+eok: true/, '+eok: 1')
+    return yaml
   end
 
   def on_fail

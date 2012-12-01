@@ -159,8 +159,7 @@ class Pegex
         count += 1
         match.concat return_
         return_ = match_next(sep) or break
-        XXX return_
-        # TODO
+        match.concat return_
         scount += 1
       end
       if max != 1

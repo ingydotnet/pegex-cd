@@ -72,7 +72,6 @@ a:
   .ref: x
 
 === Single Rule With Leading Assertion
---- LAST
 --- grammar
 a: =<x>
 --- yaml
@@ -171,7 +170,7 @@ a:
 
 === Multiple Groups
 --- grammar
-a: ( <x> <y> ) ( <z> | /.../ )
+a: ( <x> <y> ) ( <z> | /zzz/ )
 --- yaml
 a:
   .all:
@@ -180,7 +179,7 @@ a:
     - .ref: y
   - .any:
     - .ref: z
-    - .rgx: '...'
+    - .rgx: zzz
 
 === List Separator
 --- grammar
@@ -237,6 +236,7 @@ a:
     .ref: h
 
 === Whitespace in Regex
+--- SKIP
 --- grammar
 a: /<DOT>* (<DASH>{3})
     <BANG>   <BANG>
@@ -246,6 +246,7 @@ a:
   .rgx: \.*(\-{3})!!
 
 === Directives
+--- SKIP
 --- grammar
 \%grammar foo
 \%version 1.2.3
@@ -255,6 +256,7 @@ a:
 +version: 1.2.3
 
 === Multiple Duplicate Directives
+--- SKIP
 --- grammar
 \%grammar foo
 \%include bar
@@ -267,6 +269,7 @@ a:
 - baz
 
 === Meta Lines
+--- SKIP
 --- grammar
 %grammar        foo
 %version    1.1.1

@@ -51,7 +51,9 @@ class Pegex::Pegex::AST < Pegex::Tree
 
   def got_bracketed_group(got)
     prefix, group, suffix = got
-    # TODO prefix
+    unless prefix.empty?
+      group[@prefixes[prefix]] = 1
+    end
     unless suffix.empty?
       set_quantity group, suffix
     end
@@ -93,7 +95,14 @@ class Pegex::Pegex::AST < Pegex::Tree
     unless suffix.empty?
       set_quantity node, suffix
     end
-    # TODO
+    unless prefix.empty?
+      if @prefixes[prefix].kind_of? Array
+        key, val = @prefixes[prefix]
+      else
+        key, val = @prefixes[prefix], 1
+      end
+      node[key] = val
+    end
     return node
   end
 
@@ -109,7 +118,7 @@ class Pegex::Pegex::AST < Pegex::Tree
   end
 
   def got_error_message(got)
-    XXX got
+    return { '.err' => got }
   end
 
   def set_quantity object, quantifier
