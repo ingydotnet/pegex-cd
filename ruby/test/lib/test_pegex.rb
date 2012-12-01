@@ -5,7 +5,9 @@ module TestPegex
     puts "Parsing this Pegex grammar:"
     puts grammar_text
     puts
-    return Pegex::Compiler.new.parse(grammar_text).tree
+    tree = Pegex::Compiler.new.parse(grammar_text).tree
+    tree.delete('+toprule')
+    return tree
   end
 
   def yaml(object)

@@ -8,6 +8,8 @@ class Pegex
 
     attr_accessor :grammar
     attr_accessor :receiver
+    attr_accessor :parent
+    attr_accessor :rule
 
     $dummy = [1]
 
@@ -16,7 +18,7 @@ class Pegex
       @farthest = 0
       @optimized = false
       @debug = false
-      @debug = true
+      # @debug = true
       yield self
     end
 
@@ -179,7 +181,7 @@ class Pegex
       match = match_next(rule) or return false
       return $dummy unless rule['action']
       @rule, @parent = ref, parent
-      [ rule['action'].call(@receiver, match.first) ]
+      [ rule['action'].call(match.first) ]
     end
 
     def match_rgx(regexp, parent=nil)
@@ -188,7 +190,7 @@ class Pegex
       (m = string.match regexp) or return false
       position += m[0].length
       match = m[1..-1]
-      match = [ match ] if m.length > 1
+      match = [ match ] if m.length > 2
       if (@position = position) > @farthest
         @farthest = position
       end

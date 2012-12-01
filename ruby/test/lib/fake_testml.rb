@@ -39,6 +39,11 @@ class FakeTestML < Test::Unit::TestCase
   end
 
   def assert_equals(got, want, block)
+    if got != want
+      File.open('/tmp/got', 'w') {|f| f.write(got) }
+      File.open('/tmp/want', 'w') {|f| f.write(want) }
+      puts `diff -u /tmp/want /tmp/got`
+    end
     assert_equal want, got, block[:title]
   end
 
