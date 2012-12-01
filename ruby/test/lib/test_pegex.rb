@@ -1,5 +1,21 @@
 require 'pegex/compiler'
 
+class Object
+  def recursive_sort; self end
+end
+
+class Array
+  def recursive_sort
+    map &:recursive_sort
+  end
+end
+
+class Hash
+  def recursive_sort
+    Hash[keys.sort.map {|k| [k, self[k].recursive_sort]}]
+  end
+end
+
 module TestPegex
   def compile(grammar_text)
     puts "Parsing this Pegex grammar:"
@@ -12,7 +28,7 @@ module TestPegex
 
   def yaml(object)
     require 'psych'
-    Psych.dump(object)
+    Psych.dump(object.recursive_sort)
   end
 
   def clean(yaml)
