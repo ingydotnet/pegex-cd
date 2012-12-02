@@ -9,6 +9,9 @@ class FakeTestML < Test::Unit::TestCase
   end
 
   def data input
+    unless input.match /\n/
+      File.open(input, 'r') {|f| input = f.read}
+    end
     @testml = parse_tml input
   end
 
@@ -24,7 +27,7 @@ class FakeTestML < Test::Unit::TestCase
 
   def loop expr, callback=nil
     assert_testml
-    callback ||= method :run_test
+    callback ||= method 'run_test'
     get_blocks(expr).each do |block|
       @error = nil
       callback.call(block, expr)
@@ -33,6 +36,7 @@ class FakeTestML < Test::Unit::TestCase
   end
 
   def run_test block, expr
+    # puts block[:title]
     block = get_blocks(expr, [block]).first or return
     evaluate expr, block
   end

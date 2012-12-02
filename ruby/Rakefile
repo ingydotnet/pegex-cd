@@ -9,4 +9,3 @@ FileList['test/*.rb'].each do |file|
     test.test_files = [file]
   end
 end
-
