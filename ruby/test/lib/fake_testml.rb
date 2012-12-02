@@ -41,15 +41,14 @@ class FakeTestML < Test::Unit::TestCase
     evaluate expr, block
   end
 
-  # TODO s/assert_equals/assert_equal
-  def assert_equals got, want, block
+  def assert_equal got, want, block
     if got != want
       on_fail if respond_to? 'on_fail'
       File.open('/tmp/got', 'w') {|f| f.write got}
       File.open('/tmp/want', 'w') {|f| f.write want}
       puts `diff -u /tmp/want /tmp/got`
     end
-    assert_equal want, got, block[:title]
+    super want, got, block[:title]
   end
 
   def assert_match got, want, block

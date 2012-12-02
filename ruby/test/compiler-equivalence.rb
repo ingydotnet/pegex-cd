@@ -10,7 +10,7 @@ class TestML < FakeTestML
     require_or_skip 'psych'
 
     # *grammar1.compile.yaml == *grammar2.compile.yaml;
-    loop ['assert_equals',
+    loop ['assert_equal',
         ['yaml', ['compile', '*grammar1']],
         ['yaml', ['compile', '*grammar2']],
     ];
