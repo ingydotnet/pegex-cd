@@ -29,9 +29,9 @@ class FakeTestML < Test::Unit::TestCase
     assert_testml
     callback ||= method 'run_test'
     get_blocks(expr).each do |block|
-      @error = nil
+      $error = nil
       callback.call(block, expr)
-      raise @error if @error
+      raise $error if $error
     end
   end
 
@@ -51,8 +51,11 @@ class FakeTestML < Test::Unit::TestCase
     assert_equal want, got, block[:title]
   end
 
-  def catch
-    fail # TODO
+  def Catch any=nil
+    fail "Catch called, but no error occurred" unless $error
+    error = $error
+    $error = nil
+    return error
   end
 
   def evaluate expr, block
@@ -67,14 +70,15 @@ class FakeTestML < Test::Unit::TestCase
         ex
       end
     end
-    return if @error and func != 'catch'
+    return if $error and func != 'Catch'
     return args.first if func.empty?
     args << block if func =~ /^assert_/
-    return method(func).call(*args)
     begin
       return method(func).call(*args)
-    rescue
-      @error = $!.message
+    rescue => e
+      $error = e
+      puts $error.message
+      raise e
     end
   end
 

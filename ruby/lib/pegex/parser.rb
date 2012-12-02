@@ -7,6 +7,7 @@ class Pegex::Parser
   attr_accessor :receiver
   attr_accessor :parent
   attr_accessor :rule
+  attr_accessor :debug
 
   $dummy = [1]
 
@@ -16,7 +17,7 @@ class Pegex::Parser
     @optimized = false
     @debug = false
     # @debug = true
-    yield self
+    yield self if block_given?
   end
 
   def parse input, start=nil
@@ -254,4 +255,42 @@ class Pegex::Parser
   def throw_error msg
     raise msg
   end
+
+  class PegexParseError < RuntimeError
+
+  end
+
+  def throw_error msg
+    @error = format_error msg
+    return nil unless @throw_on_error
+    raise PegexParseError, @error
+  end
+
+  def format_error msg
+    buffer = @buffer
+    position = @farthest
+    real_pos = @position
+
+    line = buffer[0, position].scan(/\n/).size + 1
+    column = position - (buffer.rindex("\n", position) || -1)
+
+    pretext = @buffer[
+      position < 50 ? 0 : position - 50,
+      position < 50 ? position : 50
+    ]
+    context = @buffer[position, 50]
+    pretext.gsub! /.*\n/m, ''
+    context.gsub! /\n/, "\\n"
+
+    return <<"..."
+Error parsing Pegex document:
+  msg:      #{msg}
+  line:     #{line}
+  column:   #{column}
+  context:  #{pretext}#{context}
+  #{' ' * (pretext.length + 10)}^
+  position: #{position} (#{real_pos} pre-lookahead)
+...
+  end
+
 end

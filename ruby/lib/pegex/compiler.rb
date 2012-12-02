@@ -14,8 +14,11 @@ class Pegex::Compiler
     @atoms = Pegex::Grammar::Atoms.new.atoms
   end
 
-  def compile
-    fail
+  def compile grammar
+    parse grammar
+    combinate
+    native
+    return self
   end
 
   def parse input
@@ -82,4 +85,7 @@ class Pegex::Compiler
     end
   end
 
+  def native
+    # TODO
+  end
 end
