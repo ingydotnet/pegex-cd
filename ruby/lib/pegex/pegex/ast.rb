@@ -1,7 +1,9 @@
 require 'pegex/tree'
+require 'pegex/grammar/atoms'
 
 class Pegex::Pegex::AST < Pegex::Tree
   def initialize
+    @atoms = Pegex::Grammar::Atoms.new.atoms
     @extra_rules = {}
     @prefixes = {
       '!' => ['+asr', -1],
@@ -91,7 +93,9 @@ class Pegex::Pegex::AST < Pegex::Tree
     prefix, ref1, ref2, suffix = got
     ref = ref1 || ref2 # TODO: determine if ref1 is falsy enough
     node = { '.ref' => ref }
-    # TODO
+    if (regex = @atoms[ref])
+      @extra_rules[ref] = {'.rgx' => regex}
+    end
     unless suffix.empty?
       set_quantity node, suffix
     end

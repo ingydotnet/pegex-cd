@@ -236,7 +236,6 @@ a:
     .ref: h
 
 === Whitespace in Regex
---- SKIP
 --- grammar
 a: /<DOT>* (<DASH>{3})
     <BANG>   <BANG>

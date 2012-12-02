@@ -4,10 +4,14 @@ require 'pegex/pegex/ast'
 require 'pegex/grammar/atoms'
 
 class Pegex::Compiler
+  require 'xxx'; include XXX # XXX
+
   attr_accessor :tree
 
   def initialize
     @tree = {}
+    @_tree = {}
+    @atoms = Pegex::Grammar::Atoms.new.atoms
   end
 
   def compile
@@ -24,4 +28,58 @@ class Pegex::Compiler
 
     return self
   end
+
+  def combinate rule=nil
+    (rule ||= @tree['+toprule']) or return self
+
+    @tree.keys.grep(/^\+/).each {|k| @_tree[k] = @tree[k]}
+
+    combinate_rule rule
+    @tree = @_tree
+    return self
+  end
+
+  def combinate_rule rule
+    return if @_tree[rule]
+    object = @_tree[rule] = @tree[rule]
+    combinate_object object
+  end
+
+  def combinate_object object
+    if (sub = object['.sep'])
+      combinate_object sub
+    end
+    if object['.rgx']
+      combinate_re object
+    elsif (rule = object['.ref'])
+      if @tree[rule]
+        combinate_rule rule
+      end
+    elsif object['.any']
+      object['.any'].each {|elem| combinate_object elem}
+    elsif object['.all']
+      object['.all'].each {|elem| combinate_object elem}
+    elsif object['.err']
+    else
+      puts "Can't combinate:"
+      XXX object
+    end
+  end
+
+  def combinate_re regex
+    re = regex['.rgx']
+    loop do
+      re.gsub! /(?<!\\)(~+)/ do |m|
+        "<ws#{$1.length}>"
+      end
+      re.gsub! /<(\w+)>/ do |m|
+        @tree[$1] and (
+          @tree[$1]['.rgx'] or fail "'#{$1}' not defined as a single RE"
+        ) or @atoms[$1] or fail "'#{$1}' not defined in the grammar"
+      end
+      break if re == regex['.rgx']
+      regex['.rgx'] = re
+    end
+  end
+
 end

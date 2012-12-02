@@ -4,7 +4,7 @@ require 'recursive_sort'
 module TestPegex
   def compile grammar_text
     $grammar_text = grammar_text
-    tree = Pegex::Compiler.new.parse(grammar_text).tree
+    tree = Pegex::Compiler.new.parse(grammar_text).combinate.tree
     tree.delete '+toprule'
     return tree
   end
