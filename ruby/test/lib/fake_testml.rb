@@ -41,6 +41,7 @@ class FakeTestML < Test::Unit::TestCase
     evaluate expr, block
   end
 
+  # TODO s/assert_equals/assert_equal
   def assert_equals got, want, block
     if got != want
       on_fail if respond_to? 'on_fail'
@@ -51,11 +52,15 @@ class FakeTestML < Test::Unit::TestCase
     assert_equal want, got, block[:title]
   end
 
+  def assert_match got, want, block
+    super want, got, block[:title]
+  end
+
   def Catch any=nil
     fail "Catch called, but no error occurred" unless $error
     error = $error
     $error = nil
-    return error
+    return error.message
   end
 
   def evaluate expr, block
@@ -70,6 +75,7 @@ class FakeTestML < Test::Unit::TestCase
         ex
       end
     end
+    # TODO @error
     return if $error and func != 'Catch'
     return args.first if func.empty?
     args << block if func =~ /^assert_/
@@ -77,8 +83,6 @@ class FakeTestML < Test::Unit::TestCase
       return method(func).call(*args)
     rescue => e
       $error = e
-      puts $error.message
-      raise e
     end
   end
 

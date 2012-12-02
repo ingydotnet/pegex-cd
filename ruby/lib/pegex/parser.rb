@@ -16,6 +16,7 @@ class Pegex::Parser
     @farthest = 0
     @optimized = false
     @debug = false
+    @throw_on_error = true
     # @debug = true
     yield self if block_given?
   end
