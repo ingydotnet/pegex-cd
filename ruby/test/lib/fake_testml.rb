@@ -7,7 +7,7 @@ module FakeTestMLRunner
 end
 
 def caller_name
-  name = caller.last.split(':').first.gsub(/[^\w]+/, '_')
+  name = caller[1].split(':').first.gsub(/[^\w]+/, '_')
 end
 
 def testml_run &runner
