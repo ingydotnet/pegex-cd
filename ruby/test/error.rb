@@ -1,6 +1,6 @@
 require './test/lib/test_pegex'
 
-testml do |t|
+testml_run do |t|
   t.loop ['assert_match',
     ['Catch', %w(parse *grammar *input)],
     '*error',

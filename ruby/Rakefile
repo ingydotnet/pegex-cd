@@ -9,3 +9,8 @@ FileList['test/*.rb'].each do |file|
     test.test_files = [file]
   end
 end
+
+# Rake::TestTask.new do |test|
+#   test.verbose = true
+#   test.test_files = FileList['test/*.rb']
+# end

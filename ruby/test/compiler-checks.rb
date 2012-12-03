@@ -1,6 +1,6 @@
 require './test/lib/test_pegex'
 
-testml do |t|
+testml_run do |t|
   t.require_or_skip 'psych'
 
   # *grammar.yaml.clean == *yaml;
