@@ -75,17 +75,19 @@ class FakeTestML < Test::Unit::TestCase
   end
 
   def assert_equal got, want, block
+    label = block.kind_of?(String) ? block : block[:title]
     if got != want
       on_fail if respond_to? 'on_fail'
       File.open('/tmp/got', 'w') {|f| f.write got}
       File.open('/tmp/want', 'w') {|f| f.write want}
       puts `diff -u /tmp/want /tmp/got`
     end
-    super want, got, block[:title]
+    super want, got, label
   end
 
   def assert_match got, want, block
-    super want, got, block[:title]
+    label = block.kind_of?(String) ? block : block[:title]
+    super want, got, label
   end
 
   def Catch any=nil
