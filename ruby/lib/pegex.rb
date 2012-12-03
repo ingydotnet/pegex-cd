@@ -1,4 +1,6 @@
-module Pegex;end
+module Pegex
+  VERSION = '0.0.1'
+end
 
 require 'pegex/parser'
 require 'pegex/grammar'
