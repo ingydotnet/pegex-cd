@@ -1,15 +1,14 @@
 require './test/lib/test_pegex'
 
-class TestML < TestPegex
+testml do |t|
+  t.require_or_skip 'psych'
 
-  def test
-    require_or_skip 'psych'
+  t.data 'test/compiler.tml'
 
-    data 'test/compiler.tml'
+  t.loop ['*grammar'], t.method('run_tests')
+end
 
-    loop ['*grammar'], method('run_tests')
-  end
-
+class TestPegex
   def run_tests block, expr=nil
     label '$BlockLabel - Compiler output matches bootstrap?'
     run_test(

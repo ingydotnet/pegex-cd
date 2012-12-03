@@ -1,19 +1,16 @@
 require './test/lib/test_pegex'
 
-class TestML < TestPegex
+testml do |t|
+  t.require_or_skip 'psych'
 
-  def test
-    require_or_skip 'psych'
-
-    # *grammar.yaml.clean == *yaml;
-    loop ['assert_equal',
-      ['clean', ['yaml', ['compile', '*grammar']]],
-      '*yaml',
-    ]
-  end
+  # *grammar.yaml.clean == *yaml;
+  t.loop ['assert_equal',
+    ['clean', ['yaml', ['compile', '*grammar']]],
+    '*yaml',
+  ]
 end
 
-$testml = <<'...'
+testml_data <<'...'
 === Empty Grammar
 --- grammar
 --- yaml

@@ -1,21 +1,20 @@
 require './test/lib/test_pegex'
 
-class TestML < TestPegex
+testml do |t|
+  t.loop ['assert_match',
+    ['Catch', %w(parse *grammar *input)],
+    '*error',
+  ]
+end
 
-  def test
-    loop ['assert_match',
-      ['Catch', %w(parse *grammar *input)],
-      '*error',
-    ]
-  end
-
+class TestPegex
   def parse grammar, input
     parser = pegex grammar
     return parser.parse input
   end
 end
 
-$testml = <<'...'
+testml_data <<'...'
 === Error fails at furthest match
 # XXX This one not testing much.
 --- grammar

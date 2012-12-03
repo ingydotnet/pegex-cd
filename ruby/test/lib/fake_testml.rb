@@ -1,4 +1,24 @@
+$:.unshift File.dirname(__FILE__)
+$:.unshift File.dirname(__FILE__) + '/../../lib'
+
 require 'test/unit'
+
+# XXX - This solution depends on two globals: $runner and $testml_data
+# We can't run these tests in one process until we get rid of globals.
+def testml &runner
+  $runner = runner
+end
+
+def testml_data data
+  $testml_data = data
+end
+
+module FakeTestMLRunner
+  # This method will be run by Test::Unit::TestCase
+  def test
+    $runner.call(self)
+  end
+end
 
 class FakeTestML < Test::Unit::TestCase
   require 'xxx'; include XXX # XXX
@@ -17,8 +37,8 @@ class FakeTestML < Test::Unit::TestCase
 
   def assert_testml
     return if defined? @testml
-    raise "No testml data provided" unless $testml
-    data $testml
+    raise "No testml data provided" unless $testml_data
+    data $testml_data
   end
 
   def label text

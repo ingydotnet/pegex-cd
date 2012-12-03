@@ -1,10 +1,10 @@
-$:.unshift File.dirname(__FILE__)
-$:.unshift File.dirname(__FILE__) + '/../../lib'
-require 'fake_testml'
+require './test/lib/fake_testml'
 require 'pegex/compiler'
 require 'recursive_sort'
 
 class TestPegex < FakeTestML
+  include FakeTestMLRunner
+
   def compile grammar_text
     $grammar_text = grammar_text
     tree = Pegex::Compiler.new.parse(grammar_text).combinate.tree
