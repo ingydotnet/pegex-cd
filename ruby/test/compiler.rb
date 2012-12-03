@@ -1,11 +1,6 @@
-$LOAD_PATH.unshift File.join File.dirname(__FILE__), 'lib'
+require './test/lib/test_pegex'
 
-require 'fake_testml'
-require 'test_pegex'
-
-class TestML < FakeTestML
-  require 'xxx'; include XXX
-  include TestPegex
+class TestML < TestPegex
 
   def test
     require_or_skip 'psych'
