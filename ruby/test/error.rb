@@ -5,10 +5,7 @@ require 'test_pegex'
 require 'pegex'
 
 class TestML < FakeTestML
-  require 'xxx'; include XXX # XXX
-
   include TestPegex
-  include Pegex::Export
 
   def test
     loop ['assert_match',

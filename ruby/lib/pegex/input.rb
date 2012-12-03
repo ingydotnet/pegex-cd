@@ -1,4 +1,4 @@
-class Pegex;end
+require 'pegex'
 
 class Pegex::Input
   require 'xxx'; include XXX # XXX
