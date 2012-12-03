@@ -1,7 +1,7 @@
 require 'pegex/input'
 
 class Pegex::Parser
-  require 'xxx'; include XXX # XXX
+  require 'xxx';
 
   attr_accessor :grammar
   attr_accessor :receiver

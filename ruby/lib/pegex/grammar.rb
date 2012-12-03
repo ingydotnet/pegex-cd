@@ -1,6 +1,6 @@
 require 'pegex'
 class Pegex::Grammar
-  require 'xxx'; include XXX # XXX
+  require 'xxx';
 
   attr_accessor :text
 

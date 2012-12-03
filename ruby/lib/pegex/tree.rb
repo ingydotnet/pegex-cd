@@ -1,7 +1,7 @@
 require 'pegex/receiver'
 
 class Pegex::Tree < Pegex::Receiver
-  require 'xxx'; include XXX # XXX
+  require 'xxx';
 
   def gotrule got=nil
     return $pegex_nil if got.nil?

@@ -1,7 +1,7 @@
 require 'pegex'
 
 class Pegex::Input
-  require 'xxx'; include XXX # XXX
+  require 'xxx';
 
   attr_accessor :string
   def initialize

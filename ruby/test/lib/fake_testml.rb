@@ -1,13 +1,18 @@
 $:.unshift File.dirname(__FILE__)
 $:.unshift File.dirname(__FILE__) + '/../../lib'
 
+require 'xxx';
+
 require 'test/unit'
 
 module FakeTestMLRunner
 end
 
 def caller_name
-  name = caller[1].split(':').first.gsub(/[^\w]+/, '_')
+  name = caller.map { |s|
+    s.split(':').first
+  }.grep(/(^|\/)test\/[-\w]+\.rb$/).first or fail
+  return name.gsub!(/^(?:.*\/)?test\/([-\w+]+)\.rb$/, '\1').gsub(/[^\w]+/, '_')
 end
 
 def testml_run &runner
@@ -29,10 +34,8 @@ def testml_data data
 end
 
 class FakeTestML < Test::Unit::TestCase
-  require 'xxx'; include XXX # XXX
-
   def run_runner name
-    @test_name = name
+  @test_name = name
     $testml_runners[name].call(self)
   end
 
@@ -140,6 +143,9 @@ class FakeTestML < Test::Unit::TestCase
       end
     end
     return final
+  end
+
+  def parse_tml expr
   end
 
   def parse_tml string

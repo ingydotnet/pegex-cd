@@ -4,7 +4,7 @@ require 'pegex/pegex/ast'
 require 'pegex/grammar/atoms'
 
 class Pegex::Compiler
-  require 'xxx'; include XXX # XXX
+  require 'xxx';
 
   attr_accessor :tree
 
