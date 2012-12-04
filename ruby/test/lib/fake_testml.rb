@@ -6,6 +6,9 @@ require 'xxx';
 require 'test/unit'
 
 module FakeTestMLRunner
+  def self.make_method name, &block
+    define_method name, &block
+  end
 end
 
 def caller_name
@@ -19,12 +22,9 @@ def testml_run &runner
   name = caller_name
   $testml_runners ||= {}
   $testml_runners[name] = runner
-  FakeTestMLRunner.module_eval <<"..."
-def test_#{name}
-  return if self.class == FakeTestML
-  run_runner '#{name}'
-end
-...
+  FakeTestMLRunner.make_method "test_#{name}" do
+    run_runner name
+  end
 end
 
 def testml_data data
@@ -35,7 +35,7 @@ end
 
 class FakeTestML < Test::Unit::TestCase
   def run_runner name
-  @test_name = name
+    @test_name = name
     $testml_runners[name].call(self)
   end
 
