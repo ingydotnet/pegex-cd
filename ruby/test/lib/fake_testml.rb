@@ -61,8 +61,9 @@ class FakeTestML < Test::Unit::TestCase
     @label = text
   end
 
-  def loop expr, callback=nil
+  def eval expr, callback=nil
     assert_testml
+    expr = parse_expr expr if expr.kind_of? String
     callback ||= method 'run_test'
     get_blocks(expr).each do |block|
       $error = nil
@@ -72,7 +73,7 @@ class FakeTestML < Test::Unit::TestCase
   end
 
   def run_test block, expr
-    # puts block[:title]
+    expr = parse_expr expr if expr.kind_of? String
     block = get_blocks(expr, [block]).first or return
     evaluate expr, block
   end
@@ -145,7 +146,30 @@ class FakeTestML < Test::Unit::TestCase
     return final
   end
 
-  def parse_tml expr
+  def parse_expr expr
+    left, op, right = [], nil, nil
+    side = left
+    while expr.length != 0
+      t = get_token expr
+      if t =~ /^(==|~~)$/
+        op = t == '==' ? 'assert_equal' : 'assert_match'
+        left = side
+        side = right = []
+      else
+        side = [side] if side.size >= 2
+        side.unshift t
+      end
+    end
+    right = side if right
+    return left unless right
+    left = left.first if left.size == 1
+    right = right.first if right.size == 1
+    return [op, left, right]
+  end
+
+  def get_token expr
+    expr.sub! /(?:\s*(==|~~)\s*|([\*\w]+)\.?)/, ''
+    $1 || $2
   end
 
   def parse_tml string

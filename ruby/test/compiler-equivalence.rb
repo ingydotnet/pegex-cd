@@ -2,12 +2,7 @@ require './test/lib/test_pegex'
 
 testml_run do |t|
   t.require_or_skip 'psych'
-
-  # *grammar1.compile.yaml == *grammar2.compile.yaml;
-  t.loop ['assert_equal',
-      ['yaml', ['compile', '*grammar1']],
-      ['yaml', ['compile', '*grammar2']],
-  ];
+  t.eval '*grammar1.compile.yaml == *grammar2.compile.yaml'
 end
 
 testml_data <<'...'

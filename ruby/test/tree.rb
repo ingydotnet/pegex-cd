@@ -10,7 +10,7 @@ testml_run do |t|
 
   files.each do |f|
     t.data f
-    t.loop ['*grammar'], t.method('run_tests')
+    t.eval '*grammar', t.method('run_tests')
   end
 end
 

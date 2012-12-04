@@ -2,10 +2,8 @@ require './test/lib/test_pegex'
 
 testml_run do |t|
   t.require_or_skip 'psych'
-
   t.data 'test/compiler.tml'
-
-  t.loop ['*grammar'], t.method('run_tests')
+  t.eval '*grammar', t.method('run_tests')
 end
 
 class TestPegex

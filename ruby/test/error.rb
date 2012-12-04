@@ -1,7 +1,9 @@
 require './test/lib/test_pegex'
 
 testml_run do |t|
-  t.loop ['assert_match',
+  # TODO need to parses parens
+  # t.eval 'parse(*grammar, *input) == *error'
+  t.eval ['assert_match',
     ['Catch', %w(parse *grammar *input)],
     '*error',
   ]
