@@ -118,7 +118,7 @@ class Pegex::Pegex::AST < Pegex::Tree
   end
 
   def got_whitespace_token got
-    XXX got
+    return '.rgx' => "<ws#{got.length}>"
   end
 
   def got_error_message got

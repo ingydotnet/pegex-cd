@@ -70,18 +70,20 @@ class Pegex::Compiler
   end
 
   def combinate_re regex
-    re = regex['.rgx']
+    re = regex['.rgx'].clone
     loop do
-      re.gsub! /(?<!\\)(~+)/ do |m|
+      re.gsub! /(~+)/ do |m|
         "<ws#{$1.length}>"
       end
       re.gsub! /<(\w+)>/ do |m|
-        @tree[$1] and (
+        if @tree[$1]
           @tree[$1]['.rgx'] or fail "'#{$1}' not defined as a single RE"
-        ) or @atoms[$1] or fail "'#{$1}' not defined in the grammar"
+        else
+          @atoms[$1] or fail "'#{$1}' not defined in the grammar"
+        end
       end
       break if re == regex['.rgx']
-      regex['.rgx'] = re
+      regex['.rgx'] = re.clone
     end
   end
 

@@ -18,6 +18,7 @@ class TestPegex < FakeTestML
   end
 
   def clean yaml
+    yaml.sub! /^\.\.\.\n/, ''
     yaml.sub! /\A---\s/, ''
     yaml.gsub! /'(\d+)'/, '\1'
     yaml.gsub! /\+eok: true/, '+eok: 1'
