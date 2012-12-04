@@ -1,13 +1,11 @@
 require 'pegex/receiver'
 
 class Pegex::Tree < Pegex::Receiver
-  require 'xxx';
-
   def gotrule got=nil
     return $pegex_nil if got.nil?
 
     if self.parser.parent['-wrap']
-      return self.parser.rule => got
+      return {self.parser.rule => (got || [])}
     else
       return got
     end

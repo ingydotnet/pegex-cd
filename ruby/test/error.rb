@@ -4,13 +4,13 @@ testml_run do |t|
   # TODO need to parses parens
   # t.eval 'parse(*grammar, *input) == *error'
   t.eval ['assert_match',
-    ['Catch', %w(parse *grammar *input)],
+    ['Catch', %w(parse_input *grammar *input)],
     '*error',
   ]
 end
 
 class TestPegex
-  def parse grammar, input
+  def parse_input grammar, input
     parser = pegex grammar
     return parser.parse input
   end

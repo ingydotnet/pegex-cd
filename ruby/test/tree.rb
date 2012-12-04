@@ -10,7 +10,7 @@ testml_run do |t|
 
   files.each do |f|
     t.data f
-    t.eval '*grammar', t.method('run_tests')
+    t.eval '*grammar', t.method('run_tree_tests')
   end
 end
 
@@ -18,7 +18,7 @@ class TestPegex
   require 'pegex/tree'
   require 'pegex/tree/wrap'
   require 'testast'
-  def run_tests block, expr=nil
+  def run_tree_tests block, expr=nil
     label '$BlockLabel - Pegex::Tree'
     run_test(
       block,

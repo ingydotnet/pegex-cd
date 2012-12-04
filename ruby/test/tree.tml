@@ -48,7 +48,6 @@ xxxyyyyzzz
 a: []
 
 === Non capture Regex
---- SKIP
 --- grammar
 a: <b> <b>* -<c>* .<d>*
 b: /b/
@@ -58,7 +57,7 @@ d: /d/
 --- tree
 - []
 - []
---- wrap
+--- wrapSKIP
 a:
 - []
 - []

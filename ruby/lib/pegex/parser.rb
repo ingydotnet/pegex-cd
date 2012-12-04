@@ -1,5 +1,7 @@
 require 'pegex/input'
 
+$pegex_nil = []
+
 class Pegex::Parser
   require 'xxx';
 
@@ -127,20 +129,16 @@ class Pegex::Parser
     while return_ = method.call(rule, next_)
       position = @position unless assertion
       count += 1
-      match.concat return_
+      match.concat return_ unless return_.equal? $pegex_nil
       break if max == 1
     end
     if max != 1
       match = [match]
-      if (@position = position) > @farthest
-        @farthest = position
-      end
+      @farthest = position if (@position = position) > @farthest
     end
     result = (count >= min and (max == 0 or count <= max)) ^ (assertion == -1)
     if not result or assertion
-      if (@position = position) > @farthest
-        @farthest = position
-      end
+      @farthest = position if (@position = position) > @farthest
     end
 
     return result ? next_['-skip'] ? [] : match : false
@@ -166,9 +164,7 @@ class Pegex::Parser
     end
     result = count >= min and (max == 0 or count <= max)
     if count == scount and not sep['+eok']
-      if (@position = position) > @farthest
-        @farthest = position
-      end
+      @farthest = position if (@position = position) > @farthest
     end
 
     return result ? next_['-skip'] ? [] : match : false
@@ -179,7 +175,8 @@ class Pegex::Parser
     match = match_next(rule) or return false
     return $dummy unless rule['action']
     @rule, @parent = ref, parent
-    [ rule['action'].call(match.first) ]
+    result = rule['action'].call(match.first)
+    return (result.equal? $pegex_nil) ? result : [result]
   end
 
   def match_rgx regexp, parent=nil
@@ -189,9 +186,7 @@ class Pegex::Parser
     position += m[0].length
     match = m[1..-1]
     match = [ match ] if m.length > 2
-    if (@position = position) > @farthest
-      @farthest = position
-    end
+    @farthest = position if (@position = position) > @farthest
     return match
   end
 
@@ -204,9 +199,7 @@ class Pegex::Parser
           len += 1
         end
       else
-        if (@position = position) > @farthest
-          @farthest = position
-        end
+        @farthest = position if (@position = position) > @farthest
         return false
       end
     end

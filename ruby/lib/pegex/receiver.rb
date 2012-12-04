@@ -1,5 +1,3 @@
-$pegex_nil = []
-
 class Pegex::Receiver
   attr_accessor :parser
 
