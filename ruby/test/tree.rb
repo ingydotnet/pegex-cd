@@ -22,34 +22,26 @@ class TestPegex
     label '$BlockLabel - Pegex::Tree'
     run_test(
       block,
-      ['assert_equal',
-        ['clean', ['yaml', ['parse', Pegex::Tree, '*grammar', '*input']]],
-        '*tree',
-      ],
+      "parse_to_tree('Pegex::Tree', *grammar, *input).yaml.clean == *tree",
     )
 
     label('$BlockLabel - Pegex::Tree::Wrap');
     run_test(
       block,
-      ['assert_equal',
-        ['clean', ['yaml', ['parse', Pegex::Tree::Wrap, '*grammar', '*input']]],
-        '*wrap',
-      ],
+      "parse_to_tree('Pegex::Tree::Wrap', *grammar, *input).yaml.clean == *wrap",
     )
 
     label('$BlockLabel - t::TestAST');
     run_test(
       block,
-      ['assert_equal',
-        ['clean', ['yaml', ['parse', TestAST, '*grammar', '*input']]],
-        '*ast',
-      ],
+      "parse_to_tree('TestAST', *grammar, *input).yaml.clean == *ast",
     )
   end
 
   require 'pegex'
-  def parse(receiver, grammar, input)
-    parser = pegex(grammar, receiver)
+  def parse_to_tree(receiver, grammar, input)
+    require receiver.downcase.gsub /::/, '/'
+    parser = pegex(grammar, Kernel.eval(receiver))
     return parser.parse(input)
   end
 end

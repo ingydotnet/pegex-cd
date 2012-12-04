@@ -11,28 +11,19 @@ class TestPegex
     label '$BlockLabel - Compiler output matches bootstrap?'
     run_test(
       block,
-      ['assert_equal',
-        ['yaml', ['compile', '*grammar']],
-        ['yaml', ['compile', '*grammar']],
-      ],
+      '*grammar.compile.yaml == *grammar.compile.yaml',
     )
 
     label '$BlockLabel - Compressed grammar compiles the same?'
     run_test(
       block,
-      ['assert_equal',
-        ['yaml', ['compile', ['compress', '*grammar']]],
-        ['yaml', ['compile', ['compress', '*grammar']]],
-      ],
+      '*grammar.compress.compile.yaml == *grammar.compress.compile.yaml',
     )
 
     label '$BlockLabel - Compressed grammar matches uncompressed?'
     run_test(
       block,
-      ['assert_equal',
-        ['yaml', ['compile', ['compress', '*grammar']]],
-        ['yaml', ['compile', '*grammar']],
-      ],
+      '*grammar.compress.compile.yaml == *grammar.compile.yaml',
     )
   end
 

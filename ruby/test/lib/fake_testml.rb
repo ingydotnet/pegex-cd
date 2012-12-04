@@ -1,9 +1,9 @@
+# Make sure tests have access to the application libs and the testing libs.
 $:.unshift File.dirname(__FILE__)
 $:.unshift File.dirname(__FILE__) + '/../../lib'
 
-require 'xxx';
-
 require 'test/unit'
+require 'xxx';
 
 module FakeTestMLRunner
   def self.make_method name, &block
@@ -11,24 +11,27 @@ module FakeTestMLRunner
   end
 end
 
-def caller_name
+# Find the first call stack entry that looks like: .../test/xxx-yyy.rb
+# and return 'test_xxx_yyy' as the test name.
+def get_test_name
   name = caller.map { |s|
     s.split(':').first
   }.grep(/(^|\/)test\/[-\w]+\.rb$/).first or fail
-  return name.gsub!(/^(?:.*\/)?test\/([-\w+]+)\.rb$/, '\1').gsub(/[^\w]+/, '_')
+  name.gsub!(/^(?:.*\/)?test\/([-\w+]+)\.rb$/, '\1').gsub(/[^\w]+/, '_')
+  return "test_#{name}"
 end
 
 def testml_run &runner
-  name = caller_name
+  name = get_test_name
   $testml_runners ||= {}
   $testml_runners[name] = runner
-  FakeTestMLRunner.make_method "test_#{name}" do
+  FakeTestMLRunner.make_method name do
     run_runner name
   end
 end
 
 def testml_data data
-  name = caller_name
+  name = get_test_name
   $testml_data ||= {}
   $testml_data[name] = data
 end
@@ -168,8 +171,17 @@ class FakeTestML < Test::Unit::TestCase
   end
 
   def get_token expr
-    expr.sub! /(?:\s*(==|~~)\s*|([\*\w]+)\.?)/, ''
-    $1 || $2
+    if expr.sub! /^(\w+)\(([^\)]+)\)\.?/, ''
+      token, args = [$1], $2
+      token.concat(
+        args.split(/,\s*/).map {|t| t.sub /^(['"])(.*)\1$/, '\2'}
+      )
+    elsif expr.sub! /^\s*(==|~~)\s*/, ''
+      token = $1
+    elsif expr.sub! /^([\*\w]+)\.?/, ''
+      token = $1
+    end
+    return token
   end
 
   def parse_tml string
