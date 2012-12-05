@@ -1,11 +1,11 @@
-require './test/lib/fake_testml'
+require './test/lib/testml-fake'
 require 'pegex/compiler'
 require 'recursive_sort'
 
 require 'xxx'; # XXX
 
-class TestPegex < FakeTestML
-  include FakeTestMLTestCases
+class TestPegex < TestML::Fake
+  include TestML::Fake::TestCases
 
   def compile grammar_text
     $grammar_text = grammar_text

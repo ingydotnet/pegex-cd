@@ -4,39 +4,24 @@ $:.unshift File.dirname(__FILE__) + '/../../lib'
 
 require 'test/unit'
 
-module FakeTestMLTestCases;end
+module TestML;end
 
-# Find the first call stack entry that looks like: .../test/xxx-yyy.rb
-# and return 'test_xxx_yyy' as the test name.
-def get_test_name
-  name = caller.map { |s|
-    s.split(':').first
-  }.grep(/(^|\/)test\/[-\w]+\.rb$/).first or fail
-  name.gsub!(/^(?:.*\/)?test\/([-\w+]+)\.rb$/, '\1').gsub(/[^\w]+/, '_')
-  return "test_#{name}"
-end
+$testml_runners ||= {}
+$testml_data ||= {}
 
 def testml_run &runner
-  name = get_test_name
-  $testml_runners ||= {}
+  name = _get_test_name
   $testml_runners[name] = runner
-  FakeTestMLTestCases.send(:define_method, name) do
-    run_runner name
+  TestML::Fake::TestCases.send(:define_method, name) do
+    _run_runner name
   end
 end
 
 def testml_data data
-  name = get_test_name
-  $testml_data ||= {}
-  $testml_data[name] = data
+  $testml_data[_get_test_name] = data
 end
 
-class FakeTestML < Test::Unit::TestCase
-  def run_runner name
-    @test_name = name
-    $testml_runners[name].call(self)
-  end
-
+class TestML::Fake < Test::Unit::TestCase
   def require_or_skip module_
     require module_
     rescue exit
@@ -46,13 +31,7 @@ class FakeTestML < Test::Unit::TestCase
     unless input.match /\n/
       File.open(input, 'r') {|f| input = f.read}
     end
-    @testml = parse_tml input
-  end
-
-  def assert_testml
-    return if defined? @testml
-    raise "No testml data provided" unless $testml_data[@test_name]
-    data $testml_data[@test_name]
+    @testml = _parse_tml input
   end
 
   def label text
@@ -60,10 +39,10 @@ class FakeTestML < Test::Unit::TestCase
   end
 
   def eval expr, callback=nil
-    assert_testml
-    expr = parse_expr expr if expr.kind_of? String
+    _assert_testml
+    expr = _parse_expr expr if expr.kind_of? String
     callback ||= method 'run_test'
-    get_blocks(expr).each do |block|
+    _get_blocks(expr).each do |block|
       $error = nil
       callback.call(block, expr)
       raise $error if $error
@@ -71,9 +50,9 @@ class FakeTestML < Test::Unit::TestCase
   end
 
   def run_test block, expr
-    expr = parse_expr expr if expr.kind_of? String
-    block = get_blocks(expr, [block]).first or return
-    evaluate expr, block
+    expr = _parse_expr expr if expr.kind_of? String
+    block = _get_blocks(expr, [block]).first or return
+    _evaluate expr, block
   end
 
   def assert_equal got, want, block
@@ -99,12 +78,23 @@ class FakeTestML < Test::Unit::TestCase
     return error.message
   end
 
-  def evaluate expr, block
+  def _run_runner name
+    @test_name = name
+    $testml_runners[name].call(self)
+  end
+
+  def _assert_testml
+    return if defined? @testml
+    raise "No testml data provided" unless $testml_data[@test_name]
+    data $testml_data[@test_name]
+  end
+
+  def _evaluate expr, block
     expr = ['', expr] if expr.kind_of? String
     func = expr.first
     args = expr[1..expr.length-1].collect do |ex|
       if ex.kind_of? Array
-        evaluate ex, block
+        _evaluate ex, block
       elsif ex =~ /\A\*(\w+)\z/
         block[:points][$1]
       else
@@ -122,7 +112,7 @@ class FakeTestML < Test::Unit::TestCase
     end
   end
 
-  def get_blocks expr, blocks=@testml
+  def _get_blocks expr, blocks=@testml
     want = expr.flatten.grep(/^\*/).collect{|ex| ex.gsub /^\*/, ''}
     only = blocks.select{|block| block['ONLY']}
     blocks = only unless only.empty?
@@ -144,11 +134,11 @@ class FakeTestML < Test::Unit::TestCase
     return final
   end
 
-  def parse_expr expr
+  def _parse_expr expr
     left, op, right = [], nil, nil
     side = left
     while expr.length != 0
-      t = get_token expr
+      t = _get_token expr
       if t =~ /^(==|~~)$/
         op = t == '==' ? 'assert_equal' : 'assert_match'
         left = side
@@ -165,7 +155,7 @@ class FakeTestML < Test::Unit::TestCase
     return [op, left, right]
   end
 
-  def get_token expr
+  def _get_token expr
     if expr.sub! /^(\w+)\(([^\)]+)\)\.?/, ''
       token, args = [$1], $2
       token.concat(
@@ -179,7 +169,7 @@ class FakeTestML < Test::Unit::TestCase
     return token
   end
 
-  def parse_tml string
+  def _parse_tml string
     string.gsub! /^#.*\n/, ''
     string.gsub! /^\\/, ''
     string.gsub! /^\s*\n/, ''
@@ -214,3 +204,15 @@ class FakeTestML < Test::Unit::TestCase
     return array
   end
 end
+
+# Find the first call stack entry that looks like: .../test/xxx-yyy.rb
+# and return 'test_xxx_yyy' as the test name.
+def _get_test_name
+  name = caller.map { |s|
+    s.split(':').first
+  }.grep(/(^|\/)test\/[-\w]+\.rb$/).first or fail
+  name.gsub!(/^(?:.*\/)?test\/([-\w+]+)\.rb$/, '\1').gsub(/[^\w]+/, '_')
+  return "test_#{name}"
+end
+
+module TestML::Fake::TestCases;end
