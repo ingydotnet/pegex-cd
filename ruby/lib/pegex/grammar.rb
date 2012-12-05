@@ -1,7 +1,5 @@
 require 'pegex'
 class Pegex::Grammar
-  require 'xxx';
-
   attr_accessor :text
 
   def initialize

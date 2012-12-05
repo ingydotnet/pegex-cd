@@ -2,6 +2,8 @@ require './test/lib/fake_testml'
 require 'pegex/compiler'
 require 'recursive_sort'
 
+require 'xxx'; # XXX
+
 class TestPegex < FakeTestML
   include FakeTestMLTestCases
 

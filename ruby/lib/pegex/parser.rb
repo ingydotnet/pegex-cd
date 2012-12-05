@@ -1,17 +1,14 @@
 require 'pegex/input'
 
 $pegex_nil = []
+$dummy = [1]
 
 class Pegex::Parser
-  require 'xxx';
-
   attr_accessor :grammar
   attr_accessor :receiver
   attr_accessor :parent
   attr_accessor :rule
   attr_accessor :debug
-
-  $dummy = [1]
 
   def initialize
     @position = 0

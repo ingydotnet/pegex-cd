@@ -1,9 +1,8 @@
 require 'pegex'
 
 class Pegex::Input
-  require 'xxx';
-
   attr_accessor :string
+
   def initialize
     @is_eof = false
     @is_open = false
