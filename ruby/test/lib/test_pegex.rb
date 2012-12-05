@@ -3,7 +3,7 @@ require 'pegex/compiler'
 require 'recursive_sort'
 
 class TestPegex < FakeTestML
-  include FakeTestMLRunner
+  include FakeTestMLTestCases
 
   def compile grammar_text
     $grammar_text = grammar_text

@@ -5,11 +5,7 @@ $:.unshift File.dirname(__FILE__) + '/../../lib'
 require 'test/unit'
 require 'xxx';
 
-module FakeTestMLRunner
-  def self.make_method name, &block
-    define_method name, &block
-  end
-end
+module FakeTestMLTestCases;end
 
 # Find the first call stack entry that looks like: .../test/xxx-yyy.rb
 # and return 'test_xxx_yyy' as the test name.
@@ -25,7 +21,7 @@ def testml_run &runner
   name = get_test_name
   $testml_runners ||= {}
   $testml_runners[name] = runner
-  FakeTestMLRunner.make_method name do
+  FakeTestMLTestCases.send(:define_method, name) do
     run_runner name
   end
 end
