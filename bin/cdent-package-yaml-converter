@@ -3,7 +3,7 @@
 YAML = require 'js-yaml'
 fs = require 'fs'
 
-data = YAML.load fs.readFileSync process.argv.pop()
+data = YAML.load(String(fs.readFileSync process.argv.pop()))
 
 # Rework data for npm
 npm = data.npm

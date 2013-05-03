@@ -1,4 +1,5 @@
 require 'rake/testtask'
+require 'rake/clean'
 
 Rake::TestTask.new do |t|
   t.verbose = true
@@ -10,3 +11,5 @@ task :default do
   puts
   puts `rake -T`.gsub /^/, '  '
 end
+
+SRC = FileList '**/*'
