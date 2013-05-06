@@ -3,7 +3,7 @@ description: Acmeist PEG Parsing Framework
 version: 0.0.3
 licenses:
 - type: MIT
-  url: https://raw.github.com/ingydotnet/pegex-cdent/master/LICENSE
+  url: https://raw.github.com/ingydotnet/pegex-cd/master/LICENSE
 copyright: 2010-2012
 
 author:
@@ -15,10 +15,10 @@ keywords: [pegex, parsing, language, acmeism]
 
 homepage: http://pegex.org
 repository:
-  url: git://github.com/ingydotnet/pegex-cdent.git
+  url: git://github.com/ingydotnet/pegex-cd.git
   type: git
 bugs:
-  url: https://github.com/ingydotnet/pegex-cdent/issues
+  url: https://github.com/ingydotnet/pegex-cd/issues
 
 npm:
   name: pegex
